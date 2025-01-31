@@ -16,8 +16,8 @@ This repository is to be used as a starting point for other projects. The target
 Clone the project repository to your local machine:
 
 ```bash
-git clone --depth 1 https://github.com/eduardoshanahan/devcontainers-git ~/new-project-name
-cd ~/new-project-name
+git clone --depth 1 https://github.com/eduardoshanahan/devcontainers-git new-project-name
+cd new-project-name
 rm -rf .git/
 ```
 
