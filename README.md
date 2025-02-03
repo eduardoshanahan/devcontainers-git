@@ -1,4 +1,4 @@
-# Project Development Environment Setup using Visual Studio Code and Devcontainers
+# Running Git in devcontainers using Visual Studio Code
 
 This repository is to be used as a starting point for other projects. The target is to have a setup that can be cloned and commited from the first time, with git working inside the devcontainer, and with correct access rights to not break if a commit is done in the local machine instead of VS Code.
 
@@ -38,9 +38,9 @@ code .devcontainer/.env
 Fill in the following details:
 
 ```dotenv
+HOST_USERNAME="your_username" # Replace with your user's name (run whoami to check)
 HOST_UID=1000 # Replace with your user's UID (run id -u to check)
 HOST_GID=1000 # Replace with your user's GID (run id -g to check)
-HOST_USERNAME="Your Name" # Replace with your user's name (run whoami to check)
 GIT_USER_NAME="Your Name" # Replace with your Git username
 GIT_USER_EMAIL="<your.email@example.com>" # Replace with your Git email
 ```
@@ -81,7 +81,7 @@ You can now work on the project inside the Dev Container. All Git operations (co
 
 The .devcontainer/settings.json file includes recommended settings for the project, such as:
 
-- Tab size: 4 spaces
+- Tab size: 2 spaces
 - Format on save
 - Default terminal shell: /bin/bash
 
@@ -121,8 +121,6 @@ git-base/
 │   ├── .env
 │   └── .env.example
 ├── launch_vscode.sh
-├── src/
-│   └── ... (your source code)
 ├── README.md
 └── ... (other project files)
 ```
@@ -134,4 +132,3 @@ git-base/
   - .env.example: Template for environment variables.
   - .env: Environment variables (created by you).
 - launch_vscode.sh: Script to launch VS Code with the Dev Container.
-- src/: Directory for the project content itself
