@@ -1,0 +1,21 @@
+# Custom Dictionary Words
+bierner
+codezombiech
+davidanson
+devcontainers
+donjayamanne
+eamodio
+esbenp
+fcrespo
+foxundermoon
+githistory
+gruntfuggly
+mhutchie
+mushan
+noninteractive
+NOPASSWD
+Shanahan
+visualstudioexptteam
+vscodeintellicode
+yourname
+yzhang
