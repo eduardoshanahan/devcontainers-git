@@ -10,10 +10,12 @@ fcrespo
 foxundermoon
 githistory
 gruntfuggly
+gstp
 mhutchie
 mushan
 noninteractive
 NOPASSWD
+oneline
 Shanahan
 visualstudioexptteam
 vscodeintellicode

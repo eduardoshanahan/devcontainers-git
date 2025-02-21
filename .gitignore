@@ -1,8 +1,57 @@
-# Environment variables
+# Environment variables and secrets
+.env
+.env.*
+*.env
 .devcontainer/.env
 
-# Ignore log files
-*.log
+# IDE and editor files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
 
-# Ignore temporary files
+# Log files
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
 tmp/
+temp/
+*.tmp
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
+*.tar
+*.gz
+*.zip
+
+# Dependencies
+node_modules/
+vendor/
+package-lock.json
+yarn.lock
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Custom dictionary
+.cspell/custom-dictionary-workspace.txt
