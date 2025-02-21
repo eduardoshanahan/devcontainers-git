@@ -44,7 +44,6 @@ if [ ! -f .devcontainer/.env ]; then
     echo "HOST_GID=your_gid"
     echo "GIT_USER_NAME=\"Your Name\""
     echo "GIT_USER_EMAIL=your.email@example.com"
-    echo "EDITOR_CHOICE=code|cursor"
     exit 1
 fi
 
@@ -68,27 +67,15 @@ for var in "${required_vars[@]}"; do
     check_var "$var" "${!var:-}" || exit 1
 done
 
-# Set default editor if not specified
-EDITOR_CHOICE=${EDITOR_CHOICE:-code}
-
-# Validate editor choice
-if [ "$EDITOR_CHOICE" != "code" ] && [ "$EDITOR_CHOICE" != "cursor" ]; then
-    error "Invalid EDITOR_CHOICE: $EDITOR_CHOICE. Must be 'code' or 'cursor'"
+# Check if cursor is installed
+if ! command -v cursor &>/dev/null; then
+    error "Cursor is not installed!"
+    error "Please install Cursor from https://cursor.sh"
     exit 1
 fi
 
-# Check if the chosen editor is installed
-if ! command -v "$EDITOR_CHOICE" &>/dev/null; then
-    error "$EDITOR_CHOICE is not installed!"
-    exit 1
-fi
+# Launch Cursor
+info "Launching Cursor..."
+cursor . --no-sandbox
 
-# Launch the editor
-info "Launching $EDITOR_CHOICE..."
-if [ "$EDITOR_CHOICE" = "code" ]; then
-    code .
-else
-    cursor .
-fi
-
-success "Editor launched successfully!"
+success "Cursor launched successfully!"

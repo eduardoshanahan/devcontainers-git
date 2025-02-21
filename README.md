@@ -1,134 +1,244 @@
-# Running Git in devcontainers using Visual Studio Code
+# Git Development Environment in Devcontainers
 
-This repository is to be used as a starting point for other projects. The target is to have a setup that can be cloned and committed from the first time, with git working inside the devcontainer, and with correct access rights to not break if a commit is done in the local machine instead of VS Code.
+This repository provides a ready-to-use development environment using devcontainers, supporting both Visual Studio Code and Cursor editors. It ensures consistent Git configuration and proper file permissions whether you're working inside the container or on the host machine.
+
+## Features
+
+- Secure user permissions matching host system
+- Consistent Git configuration across environments
+- Pre-configured development tools and utilities
+- Support for both VS Code and Cursor editors
+- Customized shell with useful aliases and tools
+- GitHub CLI integration
+- Enhanced code search and navigation
 
 ## Prerequisites
 
-- Ubuntu - I am running this in Ubuntu 24.10
+- Ubuntu (tested on Ubuntu 24.10)
 - Docker installed and running
-- Visual Studio Code installed
-- VS Code Remote - Containers extension installed
+- One of the following editors:
+  - Visual Studio Code with Remote - Containers extension
+  - Cursor Editor
 
-## Setup Instructions
+## Quick Start
 
-### Clone the Repository
-
-Clone the project repository to your local machine:
+### 1. Clone and Initialize
 
 ```bash
+# Clone the repository
 git clone --depth 1 https://github.com/eduardoshanahan/devcontainers-git new-project-name
 cd new-project-name
+
+# Remove Git history to start fresh
 rm -rf .git/
+git init
 ```
 
-### Configure Environment Variables
-
-Copy the .env.example file to .env and update it with your details:
+### 2. Configure Environment
 
 ```bash
+# Copy environment template
 cp .devcontainer/.env.example .devcontainer/.env
+
+# Get your user details (note these values)
+echo "Your username: $(whoami)"
+echo "Your UID: $(id -u)"
+echo "Your GID: $(id -g)"
+
+# Edit the environment file
+code .devcontainer/.env  # or cursor .devcontainer/.env
 ```
 
-Edit the .env file:
-
-```bash
-code .devcontainer/.env
-```
-
-Fill in the following details:
+Required environment variables:
 
 ```dotenv
-HOST_USERNAME="your_username" # Replace with your user's name (run whoami to check)
-HOST_UID=1000 # Replace with your user's UID (run id -u to check)
-HOST_GID=1000 # Replace with your user's GID (run id -g to check)
-GIT_USER_NAME="Your Name" # Replace with your Git username
-GIT_USER_EMAIL="<your.email@example.com>" # Replace with your Git email
+HOST_USERNAME="your_username"     # Output of whoami
+HOST_UID=1000                     # Output of id -u
+HOST_GID=1000                     # Output of id -g
+GIT_USER_NAME="Your Name"         # Your Git username
+GIT_USER_EMAIL="your@email.com"   # Your Git email
+EDITOR_CHOICE="code"              # "code" for VS Code or "cursor" for Cursor
 ```
 
-### Build and Launch the Dev Container
+### 3. Launch the Environment
 
-Open the project in VS Code:
-
-Launch the Dev Container by running the provided script. This will ensure that all the environment variables are set correctly. Tis is important, because if they are empty VS Code will behave in strange ways (I saw the files missing, or root applied as the owner of the files created):
+Choose your preferred editor:
 
 ```bash
+# For VS Code
 ./launch_vscode.sh
+
+# For Cursor
+./launch_cursor.sh
 ```
 
-### Verify the Setup
+## Included Tools and Features
 
-Once the Dev Container is running, verify the following:
+### Development Tools
 
-- User Permissions: The container should run as the same user as your host machine, avoiding permission issues.
+- Git with enhanced configuration
+- GitHub CLI
+- Build essentials
+- curl, wget, jq
+- zip/unzip utilities
+- tree, htop
+- bash-completion
 
-```bash
-whoami
-```
+### Git Aliases
 
-- Git Configuration: Check that Git is configured correctly by running:
+| Alias | Command                   | Description                      |
+| ----- | ------------------------- | -------------------------------- |
+| gs    | git status                | Show working tree status         |
+| gp    | git pull                  | Pull changes from remote         |
+| gd    | git diff                  | Show file differences            |
+| gc    | git commit                | Create a commit                  |
+| gb    | git branch                | List or manage branches          |
+| gl    | git log --oneline --graph | Show commit history graph        |
+| gco   | git checkout              | Switch branches or restore files |
+| gf    | git fetch --all --prune   | Update remote references         |
+| gst   | git stash                 | Stash changes                    |
+| gstp  | git stash pop             | Apply stashed changes            |
 
-```bash
-git config --global --list
-```
+## VS Code Extensions
 
-Ensure the user.name and user.email match the values you provided in the .env file.
+The environment comes with pre-configured extensions for:
 
-## Work in the Dev Container
-
-You can now work on the project inside the Dev Container. All Git operations (commits, pushes, etc.) will use the configured Git user, ensuring consistency across environments.
-
-### Additional VS Code Settings
-
-The .devcontainer/settings.json file includes recommended settings for the project, such as:
-
-- Tab size: 2 spaces
-- Format on save
-- Default terminal shell: /bin/bash
-
-These settings are automatically applied when working in the Dev Container.
+- Docker and container management
+- Git integration and visualization
+- Code intelligence and completion
+- Markdown support
+- Code formatting and linting
+- Spell checking
+- File icons and themes
 
 ## Troubleshooting
 
 ### Permission Issues
 
-If you encounter permission issues, ensure that the HOST_UID and HOST_GID in the .env file match your host machine's user ID and group ID. You can check these values by running:
+```bash
+# Verify your host machine IDs match .env
+id -u  # Should match HOST_UID
+id -g  # Should match HOST_GID
+
+# Check container user
+docker exec <container-name> id
+```
+
+### Editor Launch Issues
 
 ```bash
-id -u # UID
-id -g # GID
+# Check if editor is installed
+command -v code    # For VS Code
+command -v cursor  # For Cursor
+
+# Verify environment variables
+cat .devcontainer/.env
 ```
 
 ### Git Configuration
 
-If Git is not configured correctly, you can manually set the Git user name and email inside the container:
-
 ```bash
-git config --global user.name "Your Name"
-git config --global user.email "<your.email@example.com>"
+# Verify Git configuration
+git config --global --list
+
+# Reset Git configuration if needed
+git config --global --unset-all user.name
+git config --global --unset-all user.email
 ```
 
-### Docker Issues
+## Testing Git Setup
 
-Ensure Docker is running and you have the necessary permissions to use it. If you encounter Docker-related issues, refer to the Docker documentation: <https://docs.docker.com/>
+To verify that Git is working correctly in your container, follow these steps:
+
+### 1. Check Git Installation and Configuration
+
+```bash
+# Verify Git version and configuration
+git --version
+git config --global --list
+```
+
+Expected output should show:
+
+- Git version installed
+- Your configured username and email
+- Core settings like editor, file mode, etc.
+
+### 2. Test Basic Git Operations
+
+```bash
+# Create and stage a test file
+echo "test content" > test.txt
+git add test.txt
+git status  # Should show test.txt as staged
+
+# Create a test commit
+git commit -m "test commit" test.txt
+git log -1  # Should show your commit
+
+# Test file modifications
+rm test.txt
+git status  # Should show test.txt as deleted
+```
+
+### 3. Verify Git Aliases
+
+```bash
+# Test common aliases
+gs   # git status
+gl   # git log with graph
+gd   # git diff
+```
+
+### 4. What to Check
+
+✓ Git installation:
+
+- Git command works
+- Correct version is installed
+- Configuration is properly set
+
+✓ Basic operations:
+
+- File staging works
+- Commits are created correctly
+- Status shows changes accurately
+- Log shows commit history
+
+✓ Permissions:
+
+- Files can be created/deleted
+- Git can track changes
+- No permission errors in operations
+
+If any of these tests fail, check:
+
+1. Your container user permissions
+2. Git global configuration
+3. Environment variables in `.devcontainer/.env`
 
 ## Project Structure
 
-```scss
-git-base/
+```text
+.
 ├── .devcontainer/
-│   ├── Dockerfile
-│   ├── devcontainer.json
-│   ├── .env
-│   └── .env.example
-├── launch_vscode.sh
-├── README.md
-└── ... (other project files)
+│   ├── Dockerfile          # Container definition
+│   ├── devcontainer.json   # Dev container configuration
+│   ├── .env.example        # Environment template
+│   └── .env               # Your environment variables
+├── .vscode/
+│   └── settings.json      # Editor settings
+├── launch_vscode.sh       # VS Code launcher
+├── launch_cursor.sh       # Cursor launcher
+└── README.md             # This file
 ```
 
-- .devcontainer/
-  - Dockerfile: Defines the Docker image for the Dev Container.
-  - devcontainer.json: Configures the Dev Container for VS Code.
-  - settings.json: Recommended VS Code settings for the project.
-  - .env.example: Template for environment variables.
-  - .env: Environment variables (created by you).
-- launch_vscode.sh: Script to launch VS Code with the Dev Container.
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- [Visual Studio Code Dev Containers](https://code.visualstudio.com/docs/remote/containers)
+- [Cursor Editor](https://cursor.sh/)
+- [GitHub CLI](https://cli.github.com/)
