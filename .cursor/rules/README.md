@@ -17,6 +17,7 @@ This directory contains all Cursor rules for the project. Each rule is defined i
 ## Structure
 
 Each rule file should follow this structure:
+
 ```markdown
 # Rule: [Rule Name]
 

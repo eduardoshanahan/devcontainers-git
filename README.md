@@ -52,25 +52,65 @@ code .devcontainer/.env  # or cursor .devcontainer/.env
 Required environment variables:
 
 ```dotenv
+# User configuration
 HOST_USERNAME="your_username"     # Output of whoami
 HOST_UID=1000                     # Output of id -u
 HOST_GID=1000                     # Output of id -g
+
+# Git configuration
 GIT_USER_NAME="Your Name"         # Your Git username
 GIT_USER_EMAIL="your@email.com"   # Your Git email
-EDITOR_CHOICE="code"              # "code" for VS Code or "cursor" for Cursor
+
+# Editor configuration
+EDITOR_CHOICE=code               # Use 'code' for VS Code or 'cursor' for Cursor
+
+# Docker configuration
+DOCKER_IMAGE_NAME="your-image"    # Name for the Docker image
+DOCKER_IMAGE_TAG="1.0.0"         # Tag for the Docker image
 ```
+
+### Docker Image Management
+
+By default, VS Code creates Docker images with auto-generated names. To use custom names:
+
+1. Set these variables in `.devcontainer/.env`:
+
+```bash
+DOCKER_IMAGE_NAME="your-image-name"
+DOCKER_IMAGE_TAG="your-tag"
+```
+
+1. To clean up old images and rebuild with new names:
+
+```bash
+# Stop containers using old images
+docker stop $(docker ps -q --filter ancestor=<old-image-name>)
+
+# Remove old images
+docker image rm <old-image-name>:latest
+docker image rm <old-image-name-uid>:latest
+
+# Rebuild with new name
+./launch.sh
+```
+
+The container will be rebuilt with your specified image name and tag.
 
 ### 3. Launch the Environment
 
-Choose your preferred editor:
-
 ```bash
-# For VS Code
-./launch_vscode.sh
-
-# For Cursor
-./launch_cursor.sh
+# Launch your chosen editor (VS Code or Cursor)
+./launch.sh
 ```
+
+The script will:
+
+- Validate your environment configuration
+- Check if your chosen editor is installed
+- Clean up any existing containers
+- Launch the appropriate editor
+
+If there are any issues, the script will provide helpful error messages and instructions.
 
 ## Included Tools and Features
 
@@ -228,8 +268,7 @@ If any of these tests fail, check:
 │   └── .env               # Your environment variables
 ├── .vscode/
 │   └── settings.json      # Editor settings
-├── launch_vscode.sh       # VS Code launcher
-├── launch_cursor.sh       # Cursor launcher
+├── launch.sh              # Unified launcher
 └── README.md             # This file
 ```
 

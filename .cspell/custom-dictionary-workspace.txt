@@ -1,4 +1,6 @@
 # Custom Dictionary Words
+autocorrect
+autofetch
 bierner
 codezombiech
 davidanson
@@ -11,6 +13,11 @@ foxundermoon
 githistory
 gruntfuggly
 gstp
+HISTCONTROL
+HISTFILESIZE
+HISTSIZE
+HISTTIMEFORMAT
+ignoreboth
 mhutchie
 mushan
 noninteractive
