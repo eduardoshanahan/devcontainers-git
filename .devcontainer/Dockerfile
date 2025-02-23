@@ -8,7 +8,7 @@ LABEL description="Development container for Git in Ubuntu"
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Set timezone
-ENV TZ=UTC
+ENV TZ=Europe/Dublin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Arguments for editor choice
@@ -38,10 +38,10 @@ RUN apt-get update && \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set the locale
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+RUN locale-gen en_IE.UTF-8
+ENV LANG=en_IE.UTF-8
+ENV LANGUAGE=en_IE:en
+ENV LC_ALL=en_IE.UTF-8
 
 # Arguments for user and Git configuration
 ARG HOST_USERNAME
