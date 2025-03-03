@@ -46,7 +46,11 @@
         "mushan.vscode-paste-image", // Paste Image
         "bierner.markdown-emoji", // Markdown Emoji
         "bierner.markdown-footnotes", // Markdown Footnotes
-        "AlanWalk.markdown-toc" // Markdown TOC
+        "AlanWalk.markdown-toc", // Markdown TOC
+        "github.vscode-pull-request-github", // GitHub PR integration
+        "ms-vsliveshare.vsliveshare", // Live collaboration
+        "redhat.vscode-yaml", // YAML support
+        "timonwong.shellcheck" // Shell script linting
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
@@ -98,7 +102,10 @@
           "[x]"
         ],
         "cSpell.userWords": [],
-        "cSpell.enabled": true
+        "cSpell.enabled": true,
+        "shellcheck.enable": true,
+        "shellcheck.useWorkspaceRootAsCwd": true,
+        "shellformat.flag": "-i 2 -ci -bn"
       }
     }
   },

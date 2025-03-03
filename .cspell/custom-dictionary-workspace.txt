@@ -19,6 +19,7 @@ HISTFILESIZE
 HISTSIZE
 HISTTIMEFORMAT
 ignoreboth
+keygen
 mhutchie
 mushan
 noninteractive

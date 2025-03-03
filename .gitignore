@@ -55,3 +55,15 @@ coverage/
 
 # Custom dictionary
 .cspell/custom-dictionary-workspace.txt
+
+# SSH keys and certificates
+*.pem
+*.key
+*.crt
+*.cer
+
+# Local development
+.local/
+.history/
+.vscode-server/
+.bash_history
