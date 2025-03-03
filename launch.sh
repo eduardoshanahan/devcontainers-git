@@ -35,6 +35,26 @@ check_var() {
   info "$var_name: $var_value"
 }
 
+# Function to verify SSH agent forwarding
+verify_ssh_agent() {
+  info "Verifying SSH agent forwarding..."
+
+  if [ -z "$SSH_AUTH_SOCK" ]; then
+    error "SSH_AUTH_SOCK is not set on host machine"
+    info "Please ensure your SSH agent is running: eval \"\$(ssh-agent -s)\""
+    return 1
+  fi
+
+  # Test if SSH agent is accessible
+  if ! ssh-add -l >/dev/null 2>&1; then
+    error "SSH agent is not accessible"
+    info "Please ensure your SSH agent is running and has keys added"
+    return 1
+  fi
+
+  success "SSH agent forwarding configured"
+}
+
 # Check if .env file exists
 if [ ! -f .devcontainer/.env ]; then
   error ".devcontainer/.env file not found!"
@@ -98,6 +118,9 @@ if ! command -v "${EDITOR_CHOICE}" &>/dev/null; then
   fi
   exit 1
 fi
+
+# Verify SSH agent forwarding
+verify_ssh_agent || exit 1
 
 # Clean up any existing containers using our image
 if docker ps -a | grep -q "${DOCKER_IMAGE_NAME}"; then
