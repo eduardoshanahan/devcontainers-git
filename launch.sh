@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck source=.devcontainer/.env
 
 # Set strict bash options
 set -euo pipefail
@@ -45,10 +46,42 @@ verify_ssh_agent() {
     return 1
   fi
 
+  # Start SSH agent if not running
+  if ! ssh-add -l >/dev/null 2>&1; then
+    info "Starting SSH agent..."
+    eval "$(ssh-agent -s)"
+  fi
+
+  # Add any available SSH keys
+  info "Adding available SSH keys..."
+  for key in ~/.ssh/id_*; do
+    if [[ -f "$key" && "$key" != *.pub ]]; then
+      if ! ssh-add -l | grep -q "$(ssh-keygen -lf "$key" | awk '{print $2}')" >/dev/null 2>&1; then
+        if ssh-add "$key" 2>/dev/null; then
+          info "Added key: $key"
+        else
+          error "Failed to add key: $key"
+        fi
+      else
+        info "Key already added: $key"
+      fi
+    fi
+  done
+
   # Test if SSH agent is accessible
   if ! ssh-add -l >/dev/null 2>&1; then
-    error "SSH agent is not accessible"
-    info "Please ensure your SSH agent is running and has keys added"
+    error "No SSH keys found in agent"
+    info "Please ensure you have SSH keys in ~/.ssh/"
+    return 1
+  fi
+
+  # Test GitHub SSH connection specifically
+  info "Testing GitHub SSH connection..."
+  ssh_output=$(ssh -T git@github.com 2>&1)
+  info "GitHub SSH response: $ssh_output"
+  if ! echo "$ssh_output" | grep -q "successfully authenticated"; then
+    error "GitHub SSH authentication failed"
+    info "Please ensure your GitHub SSH key is added to your SSH agent"
     return 1
   fi
 
