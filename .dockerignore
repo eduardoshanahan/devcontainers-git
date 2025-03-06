@@ -26,7 +26,9 @@ temp/
 
 # Documentation
 docs/
-*.md
+# Don't ignore all markdown files, only specific ones
+CONTRIBUTING.md
+CHANGELOG.md
 LICENSE
 
 # Test files
