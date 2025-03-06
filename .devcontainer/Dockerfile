@@ -18,6 +18,7 @@ ARG EDITOR_CHOICE=code
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
+    python3-pip \
     git \
     curl \
     build-essential \
@@ -34,8 +35,10 @@ RUN apt-get update && \
     ca-certificates \
     gnupg \
     lsb-release \
+    yamllint \
     locales \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    pip3 install pre-commit commitizen gitlint mdformat mdformat-gfm mdformat-frontmatter mdformat-footnote mdformat-tables mdformat-toc mdformat-beautysh
 
 # Set the locale
 RUN locale-gen en_IE.UTF-8
