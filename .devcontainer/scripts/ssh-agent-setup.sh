@@ -29,46 +29,40 @@ if [[ $- == *i* ]]; then
     check_file_permissions "$HOME/.ssh" "700" || chmod 700 "$HOME/.ssh"
   fi
 
-  # Check if SSH agent is running; if not, attempt to load or start one.
-  if [ -z "${SSH_AUTH_SOCK:-}" ]; then
-    # Try to load an existing agent environment file.
-    if [ -f "$HOME/.ssh/agent_env" ]; then
-      if check_file_permissions "$HOME/.ssh/agent_env" "600"; then
-        # shellcheck source=/dev/null
-        source "$HOME/.ssh/agent_env" >/dev/null
-        # Verify the loaded agent actually works
-        if ! ssh-add -l &>/dev/null; then
-          echo "Stored agent not working, starting new one..."
-          rm -f "$HOME/.ssh/agent_env"
-          eval "$(ssh-agent -s)" >/dev/null
-        fi
-      else
-        echo "Warning: agent_env file has incorrect permissions. Removing it."
-        rm -f "$HOME/.ssh/agent_env"
-        eval "$(ssh-agent -s)" >/dev/null
-      fi
-    else
-      echo "Starting new SSH agent..."
-      eval "$(ssh-agent -s)" >/dev/null
-    fi
+  # Always start a new SSH agent to ensure clean state
+  echo "Starting new SSH agent..."
+  eval "$(ssh-agent -s)" >/dev/null
 
-    # Save the agent variables with proper permissions
-    umask 077
-    {
-      echo "export SSH_AUTH_SOCK=${SSH_AUTH_SOCK}"
-      echo "export SSH_AGENT_PID=${SSH_AGENT_PID}"
-    } >"$HOME/.ssh/agent_env"
+  # Save the agent variables with proper permissions
+  umask 077
+  {
+    echo "export SSH_AUTH_SOCK=${SSH_AUTH_SOCK}"
+    echo "export SSH_AGENT_PID=${SSH_AGENT_PID}"
+  } >"$HOME/.ssh/agent_env"
 
-    # Try to add default keys if they exist
-    for key in id_rsa id_ed25519 id_ecdsa; do
-      if [ -f "$HOME/.ssh/$key" ]; then
-        if check_file_permissions "$HOME/.ssh/$key" "600"; then
-          ssh-add "$HOME/.ssh/$key" 2>/dev/null || echo "Failed to add $key"
+  echo "Looking for SSH keys in $HOME/.ssh/"
+  
+  # Add all private keys
+  for key in "$HOME/.ssh/"*; do
+    if [ -f "$key" ]; then
+      # Skip public keys, known_hosts, and agent_env
+      if [[ "$key" != *.pub ]] && [[ "$key" != *known_hosts* ]] && [[ "$key" != *agent_env ]]; then
+        echo "Attempting to add private key: $key"
+        if check_file_permissions "$key" "600"; then
+          if ssh-add "$key" 2>/dev/null; then
+            echo "Successfully added key: $key"
+          else
+            echo "Failed to add key: $key"
+          fi
         else
           echo "Warning: $key has incorrect permissions. Skipping."
         fi
       fi
-    done
-  fi
+    fi
+  done
+
+  # Show all loaded keys
+  echo "Currently loaded keys:"
+  ssh-add -l
 fi
 # --- End SSH Agent Setup ---
