@@ -1,0 +1,25 @@
+# Git directory
+.git/
+
+# Logs and databases
+*.log
+*.sqlite
+*.sqlite3
+
+# Environment files
+.env
+.env.*
+!.env.example
+.devcontainer/config/.env
+.devcontainer/.env
+
+# Build output directories
+dist/
+build/
+out/
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+vendor/ 
