@@ -25,10 +25,13 @@ This project provides a standardized development container setup that enables co
 
 - Eliminate "it works on my machine" problems by providing a consistent development environment
 - Speed up project onboarding by automating environment setup
-- Support multiple editors (VS Code, Vim) while maintaining consistent tooling
+- Support VS Code while maintaining consistent tooling
 - Provide a secure and isolated development environment
 - Enable easy customization through environment variables
 - Support both local and remote development scenarios
+- Maintain consistent user permissions across different machines and file synchronization services
+
+The container ensures consistent user permissions and Git configurations by matching the host user's UID/GID and Git credentials inside the container, making it ideal for developers working across multiple machines or using file synchronization services.
 
 ## Quick Start
 
@@ -139,23 +142,6 @@ This project provides a standardized development container setup that enables co
 
 ### Advanced Usage
 
-#### Using Vim
-
-If you prefer Vim over VS Code:
-
-1. The container includes Vim and its dependencies
-2. Your Vim configuration is mounted from `~/.vimrc`
-3. Use `vim` command in the terminal
-
-#### SSH Agent Forwarding
-
-The container automatically forwards your SSH agent:
-
-```bash
-# Test SSH connection
-ssh -T git@github.com
-```
-
 #### Environment Variables
 
 Key environment variables:
@@ -164,7 +150,7 @@ Key environment variables:
 - `HOST_UID`: Your host user ID
 - `HOST_GID`: Your host group ID
 - `CONTAINER_HOSTNAME`: Container hostname (default: dev)
-- `EDITOR_CHOICE`: Preferred editor (vscode/vim)
+- `EDITOR_CHOICE`: Preferred editor (code/cursor)
 - `GIT_USER_NAME`: Git commit author name
 - `GIT_USER_EMAIL`: Git commit author email
 
@@ -203,7 +189,14 @@ The development container includes automatic environment variable validation:
 
 ## Development Container Setup
 
-This projct is to be cloned and used as a starting point to have a devcontainer environment ready to work.
+This project is designed to be cloned and used as a starting point for setting up a development container environment. It provides:
+
+1. A standardized container configuration
+2. Automated environment setup
+3. Built-in security features
+4. VS Code integration
+5. Modern terminal experience with Starship
+6. JSON processing tools and linters
 
 ## Customization
 
@@ -390,17 +383,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## SSH Agent Setup
 
-The SSH agent is configured automatically when you start the container. Here's what happens:
+The SSH agent is configured automatically when you start the container:
 
 1. **Automatic Configuration**
    - SSH agent starts automatically in new shell sessions
-   - Your SSH keys are mounted from the host system
+   - SSH keys are mounted from the host system
    - Keys are added to the agent automatically
    - Agent persists between terminal sessions
 
 2. **Verification**
-   You can verify the setup is working by running:
-
    ```bash
    # Check if SSH agent is running
    echo $SSH_AUTH_SOCK
@@ -408,21 +399,15 @@ The SSH agent is configured automatically when you start the container. Here's w
    # List loaded keys
    ssh-add -l
 
-   # Test GitHub connection (if using GitHub)
+   # Test GitHub connection
    ssh -T git@github.com
    ```
 
-3. **Supported Key Types**
-   The following key types are automatically loaded if present:
-   - RSA keys (id_rsa)
-   - ED25519 keys (id_ed25519)
-   - ECDSA keys (id_ecdsa)
-
-4. **Security Features**
-   - Automatic permission checks on SSH files
+3. **Security Features**
+   - Keys are mounted read-only from host
+   - Strict permission enforcement (600 for keys, 700 for .ssh directory)
    - Keys are never stored in the container
    - Agent environment is persisted securely
-   - Strict permission enforcement (600 for keys, 700 for .ssh directory)
 
 ### Manual SSH Setup (if needed)
 
