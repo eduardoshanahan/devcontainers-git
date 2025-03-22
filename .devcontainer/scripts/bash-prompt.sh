@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Enable Starship prompt first
+if command -v starship >/dev/null 2>&1; then
+    eval "$(starship init bash)"
+fi
+
 # Source environment variables
 if [ -f "/workspace/.devcontainer/config/.env" ]; then
     source "/workspace/.devcontainer/config/.env"
@@ -46,11 +51,6 @@ alias jsonlint='jq "."'
 alias jsonformat='jq "."'
 alias jsonvalidate='jq empty'
 alias jsonpretty='jq "."'
-
-# Enable Starship prompt
-if command -v starship >/dev/null 2>&1; then
-    eval "$(starship init bash)"
-fi
 
 # Export SHELL variable to ensure bash is used
 export SHELL=/bin/bash 
