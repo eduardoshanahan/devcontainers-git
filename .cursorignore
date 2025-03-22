@@ -1,10 +1,25 @@
-# Git directory
-.git/
+# Git large files and indexes
+.git/index
+.git/objects/
+.git/refs/
+.git/logs/
+
+# Keep Git config and HEAD accessible
+# .git/config and .git/HEAD are not ignored
 
 # Logs and databases
 *.log
 *.sqlite
-*.sqlite3
+
+# Build output directories
+dist/
+build/
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+vendor/
 
 # Environment files
 .env
@@ -13,13 +28,10 @@
 .devcontainer/config/.env
 .devcontainer/.env
 
-# Build output directories
-dist/
-build/
-out/
+# Editor files
+.vscode/
+.idea/
 
-# Dependencies
-node_modules/
-venv/
-__pycache__/
-vendor/ 
+# OS files
+.DS_Store
+Thumbs.db 
