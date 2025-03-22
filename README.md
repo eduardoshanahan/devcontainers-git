@@ -18,6 +18,7 @@
 - [License](#license)
 - [SSH Agent Setup](#ssh-agent-setup)
 - [Environment Variable Details](#environment-variable-details)
+- [GitHub SSH Setup](#github-ssh-setup)
 
 ## Project Aim
 
@@ -58,7 +59,7 @@ The container ensures consistent user permissions and Git configurations by matc
 
    # Create a new repository on GitHub (without README, .gitignore, or license)
    # Then add your new remote
-   git remote add origin https://github.com/yourusername/your-new-project.git
+   git remote add origin git@github.com:yourusername/your-new-project.git
    ```
 
 2. **Update Project Information**
@@ -141,6 +142,15 @@ The container ensures consistent user permissions and Git configurations by matc
    - Update `.devcontainer/devcontainer.json` for VS Code settings
 
 ### Advanced Usage
+
+#### SSH Agent Forwarding
+
+The container automatically forwards your SSH agent:
+
+```bash
+# Test SSH connection
+ssh -T git@github.com
+```
 
 #### Environment Variables
 
@@ -281,58 +291,62 @@ The development container comes with several pre-installed tools and features:
    - Markdown linting (`DavidAnson.vscode-markdownlint`)
    - Remote Containers support (`ms-vscode-remote.remote-containers`)
 
-### Customizing the Environment
+## GitHub SSH Setup
 
-#### Shell Prompt Customization
+The development container is configured to use SSH for GitHub operations. This provides several benefits:
 
-The container uses Starship for the shell prompt. To customize it:
+- Secure authentication using SSH keys
+- No need to enter credentials repeatedly
+- Better integration with the container environment
 
-1. Edit `.devcontainer/config/starship.toml`
-2. Refer to [Starship documentation](https://starship.rs/config/) for options
-3. Changes take effect immediately in new terminal sessions
+### Verifying SSH Setup
 
-Example starship.toml configuration:
-
-```toml
-# Custom prompt format
-format = """
-$username\
-$hostname\
-$directory\
-$git_branch\
-$git_status\
-$nodejs\
-$python\
-$docker_context\
-$line_break\
-$character"""
-
-[character]
-success_symbol = "[➜](bold green) "
-error_symbol = "[✗](bold red) "
-```
-
-#### JSON Tools Usage
-
-The container includes several JSON-related tools:
-
-1. Command-line tools:
+1. Check if SSH keys are loaded:
 
    ```bash
-   # Format JSON file
-   cat file.json | jsonformat > formatted.json
-
-   # Validate JSON syntax
-   jsonvalidate < file.json
-
-   # Pretty print JSON
-   echo '{"key": "value"}' | jsonpretty
+   ssh-add -l
    ```
 
-2. VS Code Integration:
-   - Format on save with Prettier
-   - Real-time JSON validation with ESLint
-   - Syntax highlighting and error detection
+2. Test GitHub SSH connection:
+
+   ```bash
+   ssh -T git@github.com
+   ```
+
+   You should see: "Hi username! You've successfully authenticated..."
+
+3. Verify Git remote URL:
+
+   ```bash
+   git remote -v
+   ```
+
+   Should show: `git@github.com:username/repository.git`
+
+### Switching to SSH
+
+If your repository is using HTTPS, switch to SSH:
+
+```bash
+git remote set-url origin git@github.com:username/repository.git
+```
+
+### Troubleshooting SSH
+
+1. **Keys Not Loading**
+   - Check SSH agent: `echo $SSH_AUTH_SOCK`
+   - Verify key permissions: `ls -l ~/.ssh/`
+   - Restart SSH agent: `eval "$(ssh-agent -s)"`
+
+2. **GitHub Connection Issues**
+   - Verify key is added to GitHub account
+   - Check SSH connection: `ssh -vT git@github.com`
+   - Ensure correct remote URL format
+
+3. **Permission Issues**
+   - SSH directory: `chmod 700 ~/.ssh`
+   - Private keys: `chmod 600 ~/.ssh/id_*`
+   - Public keys: `chmod 644 ~/.ssh/*.pub`
 
 ## Troubleshooting
 
@@ -343,14 +357,14 @@ The container includes several JSON-related tools:
 
 2. **GitHub Authentication Issues**
    - If `ssh -T git@github.com` exits with code 1:
-   
+
      ```bash
      # 1. Check if SSH agent is running and has keys
      echo $SSH_AUTH_SOCK
      ssh-add -l
      
      # 2. If no keys are listed, add them
-     ssh-add ~/.ssh/id_ed25519  # or id_rsa
+     ssh-add ~/.ssh/github-contact  # or your key name
      
      # 3. Check SSH debug output
      ssh -vT git@github.com
@@ -364,16 +378,16 @@ The container includes several JSON-related tools:
      
      # 5. Check if GitHub recognizes your key
      # Compare your public key with GitHub settings
-     cat ~/.ssh/id_ed25519.pub  # or id_rsa.pub
+     cat ~/.ssh/github-contact.pub  # or your key name
      ```
-   
+
    Common issues and solutions:
    - **No keys in agent**: Run `ssh-add` to add your keys
    - **Wrong permissions**: Fix with `chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_*`
    - **Key not on GitHub**: Add your public key to GitHub account settings
    - **SSH agent not running**: Run `eval "$(ssh-agent -s)"`
    - **Wrong key format**: Ensure key is in OpenSSH format
-   
+
    If you see "You've successfully authenticated" but still get exit code 1, this is normal - GitHub's SSH test command always exits with code 1.
 
 3. **SSH Keys Not Working**
@@ -391,32 +405,37 @@ The container includes several JSON-related tools:
 5. **File Permission Issues**
    - Verify HOST_UID and HOST_GID match your system
    - Check the ownership of mounted volumes
-   - Rebuild the container if needed
 
 ## Security Notes
 
-1. **SSH Configuration**
-   - SSH keys are mounted read-only from host
-   - Permissions are strictly enforced
-   - Agent environment is persisted securely
-   - Keys are never stored in container image
+1. **SSH Key Security**
+   - Private keys should have 600 permissions
+   - Public keys should have 644 permissions
+   - SSH directory should have 700 permissions
+   - Never share private keys
+   - Use different keys for different services
 
-2. **Container Security**
-   - User runs with same UID/GID as host
-   - Sudo access is controlled
-   - Sensitive files have restricted permissions
+2. **Environment Variables**
+   - Keep sensitive data in `.env` file
+   - Never commit `.env` to version control
+   - Use `.env.example` for documentation
+
+3. **Container Security**
+   - Regular updates of base image
+   - Minimal installed packages
+   - No root access in container
+   - Secure file permissions
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## SSH Agent Setup
 
@@ -449,42 +468,21 @@ The SSH agent is configured automatically when you start the container:
 
 ### Manual SSH Setup (if needed)
 
-If you need to manually manage SSH keys:
-
 1. **Start SSH Agent**
 
    ```bash
-   # Start the agent manually
    eval "$(ssh-agent -s)"
    ```
 
-2. **Add Keys Manually**
+2. **Add Keys**
 
    ```bash
-   # Add a specific key
-   ssh-add ~/.ssh/id_rsa  # or id_ed25519, etc.
-
-   # Add all keys
-   ssh-add
+   ssh-add ~/.ssh/your-key
    ```
 
-3. **Fix Permissions**
+3. **Verify Setup**
 
    ```bash
-   # Set correct permissions on SSH directory
-   chmod 700 ~/.ssh
-
-   # Set correct permissions on keys
-   chmod 600 ~/.ssh/id_rsa
-   chmod 644 ~/.ssh/id_rsa.pub
-   ```
-
-4. **Reset SSH Agent**
-
-   ```bash
-   # Kill existing agent
-   ssh-agent -k
-
-   # Start new agent
-   eval "$(ssh-agent -s)"
+   ssh-add -l
+   ssh -T git@github.com
    ```
