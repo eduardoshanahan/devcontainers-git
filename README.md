@@ -292,6 +292,7 @@ The container uses Starship for the shell prompt. To customize it:
 3. Changes take effect immediately in new terminal sessions
 
 Example starship.toml configuration:
+
 ```toml
 # Custom prompt format
 format = """
@@ -316,6 +317,7 @@ error_symbol = "[✗](bold red) "
 The container includes several JSON-related tools:
 
 1. Command-line tools:
+
    ```bash
    # Format JSON file
    cat file.json | jsonformat > formatted.json
@@ -339,19 +341,54 @@ The container includes several JSON-related tools:
    - Update the `.env` file in `.devcontainer/config/` with correct values
    - Rebuild the container
 
-2. **SSH Keys Not Working**
+2. **GitHub Authentication Issues**
+   - If `ssh -T git@github.com` exits with code 1:
+   
+     ```bash
+     # 1. Check if SSH agent is running and has keys
+     echo $SSH_AUTH_SOCK
+     ssh-add -l
+     
+     # 2. If no keys are listed, add them
+     ssh-add ~/.ssh/id_ed25519  # or id_rsa
+     
+     # 3. Check SSH debug output
+     ssh -vT git@github.com
+     
+     # 4. Verify key permissions
+     ls -la ~/.ssh/
+     # Should show:
+     # drwx------ (700) for .ssh directory
+     # -rw------- (600) for private keys
+     # -rw-r--r-- (644) for public keys
+     
+     # 5. Check if GitHub recognizes your key
+     # Compare your public key with GitHub settings
+     cat ~/.ssh/id_ed25519.pub  # or id_rsa.pub
+     ```
+   
+   Common issues and solutions:
+   - **No keys in agent**: Run `ssh-add` to add your keys
+   - **Wrong permissions**: Fix with `chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_*`
+   - **Key not on GitHub**: Add your public key to GitHub account settings
+   - **SSH agent not running**: Run `eval "$(ssh-agent -s)"`
+   - **Wrong key format**: Ensure key is in OpenSSH format
+   
+   If you see "You've successfully authenticated" but still get exit code 1, this is normal - GitHub's SSH test command always exits with code 1.
+
+3. **SSH Keys Not Working**
    - Check key permissions on host (600 for private, 644 for public)
    - Verify SSH directory permissions (700)
    - Check if keys are loaded with `ssh-add -l`
    - Look for SSH agent messages in terminal startup
 
-3. **Git SSH Operations Failing**
+4. **Git SSH Operations Failing**
    - Ensure SSH agent is running: `echo $SSH_AUTH_SOCK`
    - Verify keys are added: `ssh-add -l`
    - Check key permissions
    - Try `ssh -T git@github.com` to test connection
 
-4. **File Permission Issues**
+5. **File Permission Issues**
    - Verify HOST_UID and HOST_GID match your system
    - Check the ownership of mounted volumes
    - Rebuild the container if needed
@@ -392,6 +429,7 @@ The SSH agent is configured automatically when you start the container:
    - Agent persists between terminal sessions
 
 2. **Verification**
+
    ```bash
    # Check if SSH agent is running
    echo $SSH_AUTH_SOCK
