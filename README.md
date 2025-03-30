@@ -1,11 +1,60 @@
 # Development Container Template
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Docker](https://img.shields.io/badge/Docker-Required-blue)](https://www.docker.com/)
+[![VS Code](https://img.shields.io/badge/VS%20Code-Required-blue)](https://code.visualstudio.com/)
+
+## Features
+
+- 🚀 **Quick Setup**: Get started in minutes with automated environment configuration
+- 🔒 **Secure**: Isolated development environment with proper user permissions
+- 🔄 **Consistent**: Same environment across all machines and operating systems
+- 🛠️ **Customizable**: Easy to modify and extend with your preferred tools
+- 🔌 **VS Code Integration**: Seamless integration with VS Code Remote Containers
+- 🔑 **SSH Support**: Built-in SSH agent forwarding for secure Git operations
+- 📦 **Pre-configured Tools**: Common development tools pre-installed and configured
+- 🔍 **Validation**: Automatic environment variable validation
+- 🎨 **Modern Terminal**: Enhanced terminal experience with Starship prompt
+- 📝 **Documentation**: Comprehensive guides and examples
+
+### Development Tools
+
+The development container comes with several pre-installed tools and features:
+
+1. **Docker Integration**
+   - Microsoft Docker extension (`ms-azuretools.vscode-docker`)
+   - Full Docker CLI support
+   - Container management and debugging capabilities
+   - Integrated Docker Desktop support
+
+2. **Modern Shell Experience**
+   - Starship prompt for beautiful and informative terminal
+   - Custom-configured prompt with Git status, Python env, Node.js version
+   - Fast and responsive command-line interface
+   - Configurable via `starship.toml` in the config directory
+
+3. **JSON Tools**
+   - `jq` command-line JSON processor
+   - VS Code extensions for JSON:
+     - Prettier (`esbenp.prettier-vscode`) for formatting
+     - ESLint (`dbaeumer.vscode-eslint`) for linting
+   - Helpful aliases:
+     - `jsonlint`: Format and validate JSON
+     - `jsonformat`: Pretty print JSON
+     - `jsonvalidate`: Check JSON syntax
+     - `jsonpretty`: Format JSON with nice output
+
+4. **Additional VS Code Extensions**
+   - Markdown linting (`DavidAnson.vscode-markdownlint`)
+   - Remote Containers support (`ms-vscode-remote.remote-containers`)
+
 ## Table of Contents
 
 - [Project Aim](#project-aim)
 - [Quick Start](#quick-start)
 - [Setting Up a New GitHub Project](#setting-up-a-new-github-project)
 - [Usage](#usage)
+  - [Requirements](#requirements)
   - [Prerequisites](#prerequisites)
   - [Basic Usage](#basic-usage)
   - [Advanced Usage](#advanced-usage)
@@ -103,11 +152,53 @@ The container ensures consistent user permissions and Git configurations by matc
 
 ## Usage
 
+### Requirements
+
+- **Docker Desktop**
+  - Version: 20.10.0 or higher
+  - Features: WSL 2 backend (Windows), BuildKit enabled
+  - Memory: Minimum 4GB RAM recommended
+  - Storage: At least 20GB free space
+
+- **VS Code**
+  - Version: 1.60.0 or higher
+  - Required Extensions:
+    - Remote - Containers (ms-vscode-remote.remote-containers)
+    - Docker (ms-azuretools.vscode-docker)
+    - GitLens (optional but recommended)
+
+- **Git**
+  - Version: 2.30.0 or higher
+  - SSH key configured (recommended)
+
+- **Operating System**
+  - Windows 10/11 Pro, Enterprise, or Education
+  - macOS 10.15 or higher
+  - Linux: Any modern distribution with Docker support
+
 ### Prerequisites
 
-- Docker Desktop installed and running
-- VS Code with Remote - Containers extension
-- Git
+Before starting, ensure you have:
+
+1. **Docker Desktop**
+   - Installed and running
+   - Proper permissions to run containers
+   - Sufficient system resources allocated
+
+2. **VS Code**
+   - Latest version installed
+   - Remote - Containers extension installed
+   - Git extension installed (recommended)
+
+3. **Git**
+   - Installed and configured
+   - User name and email set up
+   - SSH key configured (recommended)
+
+4. **System Resources**
+   - At least 4GB RAM available
+   - 20GB free disk space
+   - Stable internet connection
 
 ### Basic Usage
 
@@ -258,39 +349,6 @@ Add extensions in the `devcontainer.json` file:
 └── Dockerfile            # Container definition
 ```
 
-## Features
-
-### Development Tools
-
-The development container comes with several pre-installed tools and features:
-
-1. **Docker Integration**
-   - Microsoft Docker extension (`ms-azuretools.vscode-docker`)
-   - Full Docker CLI support
-   - Container management and debugging capabilities
-   - Integrated Docker Desktop support
-
-2. **Modern Shell Experience**
-   - Starship prompt for beautiful and informative terminal
-   - Custom-configured prompt with Git status, Python env, Node.js version
-   - Fast and responsive command-line interface
-   - Configurable via `starship.toml` in the config directory
-
-3. **JSON Tools**
-   - `jq` command-line JSON processor
-   - VS Code extensions for JSON:
-     - Prettier (`esbenp.prettier-vscode`) for formatting
-     - ESLint (`dbaeumer.vscode-eslint`) for linting
-   - Helpful aliases:
-     - `jsonlint`: Format and validate JSON
-     - `jsonformat`: Pretty print JSON
-     - `jsonvalidate`: Check JSON syntax
-     - `jsonpretty`: Format JSON with nice output
-
-4. **Additional VS Code Extensions**
-   - Markdown linting (`DavidAnson.vscode-markdownlint`)
-   - Remote Containers support (`ms-vscode-remote.remote-containers`)
-
 ## GitHub SSH Setup
 
 The development container is configured to use SSH for GitHub operations. This provides several benefits:
@@ -350,61 +408,141 @@ git remote set-url origin git@github.com:username/repository.git
 
 ## Troubleshooting
 
-1. **Wrong User ID/Group ID**
-   - Check your host system IDs with `id -u` and `id -g`
-   - Update the `.env` file in `.devcontainer/config/` with correct values
-   - Rebuild the container
+### Common Issues
 
-2. **GitHub Authentication Issues**
-   - If `ssh -T git@github.com` exits with code 1:
+1. **Container Build Failures**
+   - **Symptom**: Container fails to build with permission errors
+   - **Solution**: Ensure your user has proper Docker permissions
 
-     ```bash
-     # 1. Check if SSH agent is running and has keys
-     echo $SSH_AUTH_SOCK
-     ssh-add -l
-     
-     # 2. If no keys are listed, add them
-     ssh-add ~/.ssh/github-contact  # or your key name
-     
-     # 3. Check SSH debug output
-     ssh -vT git@github.com
-     
-     # 4. Verify key permissions
-     ls -la ~/.ssh/
-     # Should show:
-     # drwx------ (700) for .ssh directory
-     # -rw------- (600) for private keys
-     # -rw-r--r-- (644) for public keys
-     
-     # 5. Check if GitHub recognizes your key
-     # Compare your public key with GitHub settings
-     cat ~/.ssh/github-contact.pub  # or your key name
-     ```
+   ```bash
+   sudo usermod -aG docker $USER
+   # Log out and back in for changes to take effect
+   ```
 
-   Common issues and solutions:
-   - **No keys in agent**: Run `ssh-add` to add your keys
-   - **Wrong permissions**: Fix with `chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_*`
-   - **Key not on GitHub**: Add your public key to GitHub account settings
-   - **SSH agent not running**: Run `eval "$(ssh-agent -s)"`
-   - **Wrong key format**: Ensure key is in OpenSSH format
+2. **VS Code Connection Issues**
+   - **Symptom**: VS Code cannot connect to the container
+   - **Solution**:
 
-   If you see "You've successfully authenticated" but still get exit code 1, this is normal - GitHub's SSH test command always exits with code 1.
+     - Check Docker is running
+     - Verify VS Code Remote - Containers extension is installed
+     - Try rebuilding the container
 
-3. **SSH Keys Not Working**
-   - Check key permissions on host (600 for private, 644 for public)
-   - Verify SSH directory permissions (700)
-   - Check if keys are loaded with `ssh-add -l`
-   - Look for SSH agent messages in terminal startup
+3. **Git Authentication Problems**
+   - **Symptom**: Git operations fail with authentication errors
+   - **Solution**:
 
-4. **Git SSH Operations Failing**
-   - Ensure SSH agent is running: `echo $SSH_AUTH_SOCK`
-   - Verify keys are added: `ssh-add -l`
-   - Check key permissions
-   - Try `ssh -T git@github.com` to test connection
+     - Verify SSH agent forwarding is working
+     - Check your Git credentials are properly configured
+     - Ensure your SSH key is added to the agent
 
-5. **File Permission Issues**
-   - Verify HOST_UID and HOST_GID match your system
-   - Check the ownership of mounted volumes
+4. **Performance Issues**
+   - **Symptom**: Container is slow or unresponsive
+   - **Solution**:
+
+     - Check system resources (CPU, RAM, disk space)
+     - Verify Docker resource limits
+     - Consider using volume mounts instead of bind mounts
+
+### Performance Optimization
+
+1. **Docker Resource Management**
+
+   ```json
+   // In .devcontainer/devcontainer.json
+   {
+     "runArgs": [
+       "--memory=4g",
+       "--cpus=2",
+       "--shm-size=2g"
+     ]
+   }
+   ```
+
+2. **Volume Optimization**
+   - Use named volumes for frequently accessed data
+   - Exclude unnecessary files from mounting
+   - Use `.dockerignore` to reduce build context
+
+3. **Build Optimization**
+   - Layer caching
+   - Multi-stage builds
+   - Minimal base images
+
+4. **VS Code Performance**
+   - Disable unnecessary extensions
+   - Use workspace-specific settings
+   - Configure file watching limits
+
+### Getting Help
+
+If you encounter issues:
+
+1. Check the [GitHub Issues](https://github.com/eduardoshanahan/devcontainers-git/issues)
+2. Review the [VS Code Remote Containers documentation](https://code.visualstudio.com/docs/remote/containers)
+3. Consult the [Docker documentation](https://docs.docker.com/)
+4. Create a new issue with:
+   - Detailed error message
+   - Steps to reproduce
+   - System information
+   - Relevant logs
+
+## Backup and Data Persistence
+
+### Container Data
+
+1. **Volume Management**
+   - Use named volumes for persistent data
+   - Configure volume backups
+   - Implement data retention policies
+
+2. **Backup Strategies**
+
+   ```bash
+   # Backup a named volume
+   docker run --rm -v your-volume:/source -v /backup:/backup alpine tar czf /backup/backup.tar.gz -C /source .
+   
+   # Restore from backup
+   docker run --rm -v your-volume:/target -v /backup:/backup alpine sh -c "cd /target && tar xzf /backup/backup.tar.gz"
+   ```
+
+3. **Data Recovery**
+   - Regular volume backups
+   - Point-in-time recovery options
+   - Disaster recovery procedures
+
+### Configuration Backup
+
+1. **Environment Variables**
+   - Keep `.env` files in version control
+   - Use environment-specific configurations
+   - Document all configuration changes
+
+2. **VS Code Settings**
+   - Sync settings across devices
+   - Backup workspace configurations
+   - Maintain extension lists
+
+3. **Git Configuration**
+   - Backup SSH keys securely
+   - Document Git credentials
+   - Maintain access tokens
+
+### Best Practices
+
+1. **Regular Backups**
+   - Schedule automated backups
+   - Verify backup integrity
+   - Test restoration procedures
+
+2. **Security Considerations**
+   - Encrypt sensitive data
+   - Use secure backup locations
+   - Implement access controls
+
+3. **Documentation**
+   - Document backup procedures
+   - Maintain recovery guides
+   - Update procedures regularly
 
 ## Security Notes
 
