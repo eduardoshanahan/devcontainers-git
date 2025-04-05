@@ -65,4 +65,6 @@ if [[ $- == *i* ]]; then
   echo "Currently loaded keys:"
   ssh-add -l
 fi
+
+set +e
 # --- End SSH Agent Setup ---
