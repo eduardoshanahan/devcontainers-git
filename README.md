@@ -152,19 +152,13 @@ The development container comes with several pre-installed tools and features:
    - Proper permissions to run containers
    - Sufficient system resources allocated
 
-- **VS Code**
-  - Version: 1.60.0 or higher
-  - Required Extensions:
-    - Remote - Containers (ms-vscode-remote.remote-containers)
-    - Docker (ms-azuretools.vscode-docker)
-    - GitLens (optional but recommended)
+2. **VS Code**
+   - Latest version installed
+   - Remote - Containers extension installed
+   - Git extension installed (recommended)
 
-- **Git**
-  - Version: 2.30.0 or higher
-  - SSH key configured (recommended)
-
-- **Operating System**
-  - Linux: I use it with Ubuntu, I would expect it to work with other distributions
+3. **Operating System**
+   - Linux: I use it with Ubuntu, I would expect it to work with other distributions
 
 ### Basic Usage
 
@@ -405,7 +399,7 @@ git remote set-url origin git@github.com:username/repository.git
 
 1. **Docker Resource Management**
 
- Update .devcontainer/devcontainer.json:
+   Update .devcontainer/devcontainer.json:
 
    ```json
    {
