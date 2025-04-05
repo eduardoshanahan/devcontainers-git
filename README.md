@@ -1,21 +1,30 @@
-# Development Container Template
+# Development Container Template - Just Git
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/Docker-Required-blue)](https://www.docker.com/)
 [![VS Code](https://img.shields.io/badge/VS%20Code-Required-blue)](https://code.visualstudio.com/)
 
-## Features
+## Why do I have this project?
 
-- 🚀 **Quick Setup**: Get started in minutes with automated environment configuration
-- 🔒 **Secure**: Isolated development environment with proper user permissions
-- 🔄 **Consistent**: Same environment across all machines and operating systems
-- 🛠️ **Customizable**: Easy to modify and extend with your preferred tools
-- 🔌 **VS Code Integration**: Seamless integration with VS Code Remote Containers
-- 🔑 **SSH Support**: Built-in SSH agent forwarding for secure Git operations
-- 📦 **Pre-configured Tools**: Common development tools pre-installed and configured
-- 🔍 **Validation**: Automatic environment variable validation
-- 🎨 **Modern Terminal**: Enhanced terminal experience with Starship prompt
-- 📝 **Documentation**: Comprehensive guides and examples
+In the last few years I have been using Visual Studio Code, and I like to use as much containers as I can, instead of setting up environments or things like that.
+
+Devcontainers is pretty handy for that, and it is just a short step to move it into a deployment when I am done.
+
+I found myself re creating a similar setup each time, with more or less features each time, and this is an attempt to simplify that step.
+
+I am thinking of creating a few different devcontaienrs, each based in a previous iteration (although I don't like inheritance, in this case seems to be valuable).
+
+This is the first run. Just Ubuntu (my remote deployments are usually containers based in Ubuntu) with git and some editing tools (Markdown validation, some git shortcuts, and that is it).
+
+VS Code is also configured to use the validation tools by way of extensions, and they also hang as command line tools (although I don't use them regularly).
+
+An extra situation is that I have also a Synology NAS where I synchronise my files. I commit to git when ready, but I like to be able to continue working in any of my machines and have them in sync automatically. Synology Drive is good for that.
+
+However, there are some tricky cases around file ownership (I use Ubuntu 24.10 at the moment in my own machines). Depending on where the files are created (the workstation or inside the container), Synology gets confused and start to cause troubles around the synchronisation process. 
+
+A way around it is to use the same user inside the container as it is outside. A launch script takes care of that details passing activity, and all the files seems to be updated correctly now.
+
+I want to be able to use Git inside and out of the container, then I also pass the ssh credentials to my Git remote repository to syncronise at will. That also seems to be working correctly.
 
 ### Development Tools
 
@@ -28,8 +37,8 @@ The development container comes with several pre-installed tools and features:
    - Integrated Docker Desktop support
 
 2. **Modern Shell Experience**
-   - Starship prompt for beautiful and informative terminal
-   - Custom-configured prompt with Git status, Python env, Node.js version
+   - Starship prompt
+   - Custom-configured prompt with Git status
    - Fast and responsive command-line interface
    - Configurable via `starship.toml` in the config directory
 
@@ -50,14 +59,13 @@ The development container comes with several pre-installed tools and features:
 
 ## Table of Contents
 
-- [Project Aim](#project-aim)
 - [Quick Start](#quick-start)
 - [Setting Up a New GitHub Project](#setting-up-a-new-github-project)
 - [Usage](#usage)
   - [Requirements](#requirements)
   - [Prerequisites](#prerequisites)
   - [Basic Usage](#basic-usage)
-  - [Advanced Usage](#advanced-usage)
+
 - [Development Container Setup](#development-container-setup)
 - [Customization](#customization)
 - [Project Structure](#project-structure)
@@ -69,26 +77,12 @@ The development container comes with several pre-installed tools and features:
 - [Environment Variable Details](#environment-variable-details)
 - [GitHub SSH Setup](#github-ssh-setup)
 
-## Project Aim
-
-This project provides a standardized development container setup that enables consistent development environments across different machines and operating systems. It's designed to:
-
-- Eliminate "it works on my machine" problems by providing a consistent development environment
-- Speed up project onboarding by automating environment setup
-- Support VS Code while maintaining consistent tooling
-- Provide a secure and isolated development environment
-- Enable easy customization through environment variables
-- Support both local and remote development scenarios
-- Maintain consistent user permissions across different machines and file synchronization services
-
-The container ensures consistent user permissions and Git configurations by matching the host user's UID/GID and Git credentials inside the container, making it ideal for developers working across multiple machines or using file synchronization services.
-
 ## Quick Start
 
 1. Clone this repository
 2. Copy `.devcontainer/config/.env.example` to `.devcontainer/config/.env`
 3. Update the environment variables in `.env` with your settings
-4. Open the project in VS Code
+4. From your local machine, launch the editor with '''./launch.sh'''
 5. When prompted, click "Reopen in Container"
 
 ## Setting Up a New GitHub Project
@@ -141,7 +135,7 @@ The container ensures consistent user permissions and Git configurations by matc
    ```
 
 5. **Verify Setup**
-   - Open the project in VS Code
+   - Start VS Code with '''./launch.sh'''
    - Click "Reopen in Container"
    - Verify that the container builds successfully
    - Check that your Git configuration is working:
@@ -154,11 +148,10 @@ The container ensures consistent user permissions and Git configurations by matc
 
 ### Requirements
 
-- **Docker Desktop**
-  - Version: 20.10.0 or higher
-  - Features: WSL 2 backend (Windows), BuildKit enabled
-  - Memory: Minimum 4GB RAM recommended
-  - Storage: At least 20GB free space
+1. **Docker**
+   - Installed and running
+   - Proper permissions to run containers
+   - Sufficient system resources allocated
 
 - **VS Code**
   - Version: 1.60.0 or higher
@@ -172,52 +165,18 @@ The container ensures consistent user permissions and Git configurations by matc
   - SSH key configured (recommended)
 
 - **Operating System**
-  - Windows 10/11 Pro, Enterprise, or Education
-  - macOS 10.15 or higher
-  - Linux: Any modern distribution with Docker support
-
-### Prerequisites
-
-Before starting, ensure you have:
-
-1. **Docker Desktop**
-   - Installed and running
-   - Proper permissions to run containers
-   - Sufficient system resources allocated
-
-2. **VS Code**
-   - Latest version installed
-   - Remote - Containers extension installed
-   - Git extension installed (recommended)
-
-3. **Git**
-   - Installed and configured
-   - User name and email set up
-   - SSH key configured (recommended)
-
-4. **System Resources**
-   - At least 4GB RAM available
-   - 20GB free disk space
-   - Stable internet connection
+  - Linux: I use it with Ubuntu, I would expect it to work with other distributions
 
 ### Basic Usage
 
 1. **Initial Setup**
 
    ```bash
-   # Clone the repository
-   git clone <repository-url>
    cd <repository-name>
-
-   # Copy the example environment file
-   cp .devcontainer/config/.env.example .devcontainer/config/.env
-
-   # Edit the environment file with your settings
-   nano .devcontainer/config/.env
+   ./launch.sh
    ```
 
 2. **Starting the Container**
-   - Open the project in VS Code
    - Click "Reopen in Container" when prompted
    - Wait for the container to build and start
 
@@ -513,7 +472,7 @@ If you encounter issues:
 ### Configuration Backup
 
 1. **Environment Variables**
-   - Keep `.env` files in version control
+   - Keep `.env` files outside of version control. This is to not leak details if you are keeping the project in a publig Git repository. If you are not using Synology, setup some other type of backup for private details.
    - Use environment-specific configurations
    - Document all configuration changes
 
