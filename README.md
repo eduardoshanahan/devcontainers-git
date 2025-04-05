@@ -405,8 +405,9 @@ git remote set-url origin git@github.com:username/repository.git
 
 1. **Docker Resource Management**
 
+ Update .devcontainer/devcontainer.json:
+
    ```json
-   // In .devcontainer/devcontainer.json
    {
      "runArgs": [
        "--memory=4g",
