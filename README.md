@@ -20,7 +20,7 @@ VS Code is also configured to use the validation tools by way of extensions, and
 
 An extra situation is that I have also a Synology NAS where I synchronise my files. I commit to git when ready, but I like to be able to continue working in any of my machines and have them in sync automatically. Synology Drive is good for that.
 
-However, there are some tricky cases around file ownership (I use Ubuntu 24.10 at the moment in my own machines). Depending on where the files are created (the workstation or inside the container), Synology gets confused and start to cause troubles around the synchronisation process. 
+However, there are some tricky cases around file ownership (I use Ubuntu 24.10 at the moment in my own machines). Depending on where the files are created (the workstation or inside the container), Synology gets confused and start to cause troubles around the synchronisation process.
 
 A way around it is to use the same user inside the container as it is outside. A launch script takes care of that details passing activity, and all the files seems to be updated correctly now.
 
@@ -63,7 +63,6 @@ The development container comes with several pre-installed tools and features:
 - [Setting Up a New GitHub Project](#setting-up-a-new-github-project)
 - [Usage](#usage)
   - [Requirements](#requirements)
-  - [Prerequisites](#prerequisites)
   - [Basic Usage](#basic-usage)
 
 - [Development Container Setup](#development-container-setup)
