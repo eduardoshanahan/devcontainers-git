@@ -44,6 +44,11 @@
         "GIT_REMOTE_URL": "${localEnv:GIT_REMOTE_URL}"
     },
     "runArgs": [
-        "--hostname=${localEnv:CONTAINER_HOSTNAME:-dev}"
-    ]
+        "--hostname=${localEnv:CONTAINER_HOSTNAME:-dev}",
+        "--env=SSH_AUTH_SOCK=${localEnv:SSH_AUTH_SOCK}"
+    ],
+    "forwardPorts": [],
+    "remoteEnv": {
+        "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}"
+    }
 }
