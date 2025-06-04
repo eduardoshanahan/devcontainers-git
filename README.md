@@ -36,9 +36,10 @@ The development container comes with several pre-installed tools and features:
    - Container management and debugging capabilities
    - Integrated Docker Desktop support
 
-2. **Starship configured**
+2. **Modern Shell Experience**
    - Starship prompt
    - Custom-configured prompt with Git status
+   - Fast and responsive command-line interface
    - Configurable via `starship.toml` in the config directory
 
 3. **JSON Tools**
