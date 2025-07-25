@@ -10,7 +10,7 @@ In the last few years I have been using Visual Studio Code, and I like to use as
 
 Devcontainers is pretty handy for that, and it is just a short step to move it into a deployment when I am done.
 
-I found myself re creating a similar setup each time, with more or less features each time, and this is an attempt to simplify that step.
+I found myself recreating a similar setup each time, with more or less features each time, and this is an attempt to simplify that step.
 
 I am thinking of creating a few different devcontainers, each based on a previous iteration (although I don't like inheritance, in this case seems to be valuable).
 
@@ -81,7 +81,7 @@ The development container comes with several pre-installed tools and features:
 1. Clone this repository
 2. Copy `.devcontainer/config/.env.example` to `.devcontainer/config/.env`
 3. Update the environment variables in `.env` with your settings
-4. From your local machine, launch the editor with '''./launch.sh'''
+4. From your local machine, launch the editor with ```./launch.sh```
 5. When prompted, click "Reopen in Container"
 
 ## Setting Up a New GitHub Project
@@ -134,7 +134,7 @@ The development container comes with several pre-installed tools and features:
    ```
 
 5. **Verify Setup**
-   - Start VS Code with '''./launch.sh'''
+   - Start VS Code with ```./launch.sh```
    - Click "Reopen in Container"
    - Verify that the container builds successfully
    - Check that your Git configuration is working:
