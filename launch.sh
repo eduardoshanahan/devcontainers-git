@@ -48,6 +48,7 @@ HOST_GID=your_gid
 # Git configuration
 GIT_USER_NAME="Your Name"
 GIT_USER_EMAIL="your.email@example.com"
+GIT_REMOTE_URL="git@github.com:username/repo.git"  # or https://github.com/username/repo.git
 
 # Editor configuration
 EDITOR_CHOICE=code  # Use 'code' for VS Code or 'cursor' for Cursor
@@ -71,6 +72,7 @@ export HOST_UID
 export HOST_GID
 export GIT_USER_NAME
 export GIT_USER_EMAIL
+export GIT_REMOTE_URL
 export EDITOR_CHOICE
 export DOCKER_IMAGE_NAME
 export DOCKER_IMAGE_TAG
@@ -82,6 +84,7 @@ required_vars=(
   "HOST_GID"
   "GIT_USER_NAME"
   "GIT_USER_EMAIL"
+  "GIT_REMOTE_URL"
   "EDITOR_CHOICE"
   "DOCKER_IMAGE_NAME"
   "DOCKER_IMAGE_TAG"

@@ -10,9 +10,9 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Print functions
-info() { echo -e "${YELLOW}ℹ️  $1${NC}"; }
-success() { echo -e "${GREEN}✅ $1${NC}"; }
-error() { echo -e "${RED}❌ $1${NC}" >&2; }
+info() { echo -e "${YELLOW}  $1${NC}"; }
+success() { echo -e "${GREEN} $1${NC}"; }
+error() { echo -e "${RED} $1${NC}" >&2; }
 
 # Get the actual project directory (parent of scripts directory)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -21,6 +21,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 # Configuration with defaults
 BRANCH="${BRANCH:-main}"
 FORCE_PULL="${FORCE_PULL:-false}"
+GIT_REMOTE_URL="${GIT_REMOTE_URL:-}"
 
 # Function to backup local changes
 backup_local_changes() {
@@ -44,24 +45,54 @@ main() {
     # Check if .git exists
     if [ ! -d ".git" ]; then
         info "No .git folder found. Initializing git repository..."
+        
+        # Check if remote URL is provided
+        if [ -z "$GIT_REMOTE_URL" ]; then
+            error "No GIT_REMOTE_URL environment variable set. Please set it in your .env file."
+            exit 1
+        fi
+
+        # Initialize git repository
         git init
 
-        # Check if remote URL is configured
-        if ! git remote get-url origin &>/dev/null; then
-            info "No remote configured. Please run:"
-            echo "git remote add origin <your-repository-url>"
-            echo "git fetch origin"
-            echo "git checkout -t origin/$BRANCH"
-            exit 0
+        # Add remote
+        git remote add origin "$GIT_REMOTE_URL"
+        
+        # If files exist (Synology sync), add them to git
+        if [ -n "$(ls -A .)" ]; then
+            info "Existing files detected. Adding them to git..."
+            git add .
+            git commit -m "Initial commit of existing files"
         fi
+
+        # Fetch and checkout the branch
+        info "Fetching from remote and checking out $BRANCH..."
+        git fetch origin
+        if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            # Branch exists on remote
+            git checkout -b "$BRANCH" "origin/$BRANCH"
+        else
+            # Branch doesn't exist on remote, create it
+            git checkout -b "$BRANCH"
+            git push -u origin "$BRANCH"
+        fi
+        
+        success "Git repository initialized and synced with remote."
+        exit 0
     fi
 
     # Get current remote URL
     REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "")
 
     if [ -z "$REMOTE_URL" ]; then
-        error "No remote URL configured. Please set up your git remote first."
-        exit 1
+        if [ -n "$GIT_REMOTE_URL" ]; then
+            info "Adding remote URL from environment variable..."
+            git remote add origin "$GIT_REMOTE_URL"
+            REMOTE_URL="$GIT_REMOTE_URL"
+        else
+            error "No remote URL configured. Please set GIT_REMOTE_URL in your .env file."
+            exit 1
+        fi
     fi
 
     success "Git repository found with remote: $REMOTE_URL"
@@ -81,13 +112,26 @@ main() {
         git reset --hard "origin/$BRANCH"
         git clean -fd  # Remove untracked files and directories
     else
-        # Check for local changes
-        if ! git diff-index --quiet HEAD --; then
-            error "Local changes detected. Please commit or stash them first."
-            error "Or set FORCE_PULL=true to overwrite local changes."
-            exit 1
+        # Check if we have any commits
+        if ! git rev-parse HEAD &>/dev/null; then
+            info "No commits found. Initializing repository..."
+            if [ -n "$(ls -A .)" ]; then
+                git add .
+                git commit -m "Initial commit"
+            fi
+            git pull origin "$BRANCH" || {
+                info "No remote branch found. Creating new branch..."
+                git push -u origin "$BRANCH"
+            }
+        else
+            # Check for local changes
+            if ! git diff-index --quiet HEAD --; then
+                error "Local changes detected. Please commit or stash them first."
+                error "Or set FORCE_PULL to overwrite local changes -> FORCE_PULL=true ./scripts/sync_git.sh"
+                exit 1
+            fi
+            git pull origin "$BRANCH"
         fi
-        git pull origin "$BRANCH"
     fi
 
     success "Git sync complete!"
