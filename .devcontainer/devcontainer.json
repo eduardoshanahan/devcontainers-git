@@ -11,6 +11,11 @@
     },
     "customizations": {
         "vscode": {
+            "settings": {
+                "editor.acceptSuggestionOnTab": false,
+                "editor.tabCompletion": "off",
+                "editor.acceptSuggestionOnEnter": "off"
+            },
             "extensions": [
                 "ms-azuretools.vscode-docker",
                 "DavidAnson.vscode-markdownlint",
@@ -40,9 +45,15 @@
         "USERNAME": "${localEnv:HOST_USERNAME}",
         "USER_UID": "${localEnv:HOST_UID}",
         "USER_GID": "${localEnv:HOST_GID}",
-        "CONTAINER_HOSTNAME": "${localEnv:CONTAINER_HOSTNAME:-dev}"
+        "CONTAINER_HOSTNAME": "${localEnv:CONTAINER_HOSTNAME:-dev}",
+        "GIT_REMOTE_URL": "${localEnv:GIT_REMOTE_URL}"
     },
     "runArgs": [
-        "--hostname=${localEnv:CONTAINER_HOSTNAME:-dev}"
-    ]
+        "--hostname=${localEnv:CONTAINER_HOSTNAME:-dev}",
+        "--env=SSH_AUTH_SOCK=${localEnv:SSH_AUTH_SOCK}"
+    ],
+    "forwardPorts": [],
+    "remoteEnv": {
+        "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}"
+    }
 }

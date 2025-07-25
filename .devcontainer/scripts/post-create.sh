@@ -28,6 +28,11 @@ if [ -n "$GIT_USER_NAME" ] && [ -n "$GIT_USER_EMAIL" ]; then
     git config --global user.email "$GIT_USER_EMAIL"
 fi
 
+# Add workspace to Git safe directories
+echo "Configuring Git safe directories..."
+git config --global --add safe.directory /workspace
+git config --global --add safe.directory /home/${HOST_USERNAME}/.devcontainer
+
 # Make scripts executable
 chmod +x /workspace/.devcontainer/scripts/bash-prompt.sh
 chmod +x /workspace/.devcontainer/scripts/ssh-agent-setup.sh

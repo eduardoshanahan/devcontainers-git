@@ -6,13 +6,13 @@
 
 ## Why do I have this project?
 
-In the last few years I have been using Visual Studio Code, and I like to use as much containers as I can, instead of setting up environments or things like that.
+In the last few years I have been using Visual Studio Code, and I like to use as much containers as I can, instead of setting up environments for Python or things like that.
 
 Devcontainers is pretty handy for that, and it is just a short step to move it into a deployment when I am done.
 
 I found myself re creating a similar setup each time, with more or less features each time, and this is an attempt to simplify that step.
 
-I am thinking of creating a few different devcontaienrs, each based in a previous iteration (although I don't like inheritance, in this case seems to be valuable).
+I am thinking of creating a few different devcontainers, each based on a previous iteration (although I don't like inheritance, in this case seems to be valuable).
 
 This is the first run. Just Ubuntu (my remote deployments are usually containers based in Ubuntu) with git and some editing tools (Markdown validation, some git shortcuts, and that is it).
 
@@ -183,6 +183,43 @@ The development container comes with several pre-installed tools and features:
    - Edit `.devcontainer/config/.env` to change settings
    - Modify `.devcontainer/Dockerfile` to add new tools
    - Update `.devcontainer/devcontainer.json` for VS Code settings
+
+### Git Synchronization
+
+The project includes a `sync_git.sh` script that helps manage Git synchronization, especially useful when working with Synology Drive sync:
+
+1. **Configuration**
+   - Set `GIT_REMOTE_URL` in your `.env` file:
+
+     ```bash
+     # For HTTPS
+     GIT_REMOTE_URL="https://github.com/username/repo.git"
+     # For SSH
+     GIT_REMOTE_URL="git@github.com:username/repo.git"
+     ```
+
+2. **Usage**
+
+   ```bash
+   # Normal sync (will fail if there are local changes)
+   ./scripts/sync_git.sh
+
+   # Force sync (will backup and overwrite local changes)
+   FORCE_PULL=true ./scripts/sync_git.sh
+   ```
+
+3. **Features**
+   - Automatically initializes Git if not present
+   - Handles existing files from Synology sync
+   - Creates backups of local changes before force-pulling
+   - Supports both HTTPS and SSH remote URLs
+   - Merges local and remote changes when possible
+
+4. **Safety Features**
+   - Creates timestamped backups of local changes
+   - Preserves untracked files in backups
+   - Requires explicit confirmation for force-pulling
+   - Validates remote URL configuration
 
 ### Advanced Usage
 
