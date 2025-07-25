@@ -46,7 +46,7 @@
         "USERNAME": "${localEnv:HOST_USERNAME}",
         "USER_UID": "${localEnv:HOST_UID}",
         "USER_GID": "${localEnv:HOST_GID}",
-        "CONTAINER_HOSTNAME": "${localEnv:CONTAINER_HOSTNAME:-dev}",
+        "CONTAINER_HOSTNAME": "${localEnv:CONTAINER_HOSTNAME:-devcontainers-git}",
         "GIT_USER_NAME": "${localEnv:GIT_USER_NAME}",
         "GIT_USER_EMAIL": "${localEnv:GIT_USER_EMAIL}",
         "GIT_REMOTE_URL": "${localEnv:GIT_REMOTE_URL:-}",
