@@ -50,7 +50,7 @@
         "GIT_USER_NAME": "${localEnv:GIT_USER_NAME}",
         "GIT_USER_EMAIL": "${localEnv:GIT_USER_EMAIL}",
         "GIT_REMOTE_URL": "${localEnv:GIT_REMOTE_URL:-}",
-        "DOCKER_IMAGE_NAME": "${localEnv:DOCKER_IMAGE_NAME:-dev-container}",
+        "DOCKER_IMAGE_NAME": "${localEnv:DOCKER_IMAGE_NAME:-devcontainers-git}",
         "DOCKER_IMAGE_TAG": "${localEnv:DOCKER_IMAGE_TAG:-latest}"
     },
     "runArgs": [
