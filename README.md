@@ -117,7 +117,26 @@ The development container comes with several pre-installed tools and features:
    ```bash
    # Copy and configure the environment file
    cp .devcontainer/config/.env.example .devcontainer/config/.env
-   # Edit .env with your project-specific settings
+   ```
+
+   - Edit .env with your project-specific settings. In particular update
+
+   ```text
+   CONTAINER_HOSTNAME=devcontainers-git
+
+   DOCKER_IMAGE_NAME=devcontainers-git
+   ```
+
+   - Edit devcontainer.json. In particular update
+
+   ```text
+    "name": "Ubuntu Devcontainers-Git",
+
+   "DOCKER_IMAGE_NAME": "${localEnv:DOCKER_IMAGE_NAME:-dev-container}",
+
+    {localEnv:CONTAINER_HOSTNAME:-devcontainers-git}",
+
+   "--hostname=${localEnv:CONTAINER_HOSTNAME:devcontainers-git}",
    ```
 
 4. **Initial Commit**
