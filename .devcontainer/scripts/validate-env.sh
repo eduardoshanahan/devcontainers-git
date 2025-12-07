@@ -2,9 +2,9 @@
 
 # Required variables with their descriptions and validation rules
 declare -A required_vars=(
-    ["HOST_USERNAME"]="System username|^[a-z_][a-z0-9_-]*[$]?$"
-    ["HOST_UID"]="User ID|^[0-9]+$"
-    ["HOST_GID"]="Group ID|^[0-9]+$"
+    ["USERNAME"]="System username|^[a-z_][a-z0-9_-]*[$]?$"
+    ["USER_UID"]="User ID|^[0-9]+$"
+    ["USER_GID"]="Group ID|^[0-9]+$"
 )
 
 # Optional variables with default values and validation rules
