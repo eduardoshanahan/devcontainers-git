@@ -60,7 +60,7 @@ fi
 # Add workspace to Git safe directories
 echo "Configuring Git safe directories..."
 git config --global --add safe.directory /workspace
-git config --global --add safe.directory /home/${HOST_USERNAME}/.devcontainer
+git config --global --add safe.directory /home/${USERNAME}/.devcontainer
 
 # Make scripts executable
 chmod +x /workspace/.devcontainer/scripts/bash-prompt.sh
