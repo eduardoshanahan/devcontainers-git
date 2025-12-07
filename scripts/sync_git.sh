@@ -18,9 +18,22 @@ error() { echo -e "${RED} $1${NC}" >&2; }
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
-# Load environment variables if .env file exists
-if [ -f "$PROJECT_DIR/.devcontainer/config/.env" ]; then
-    source "$PROJECT_DIR/.devcontainer/config/.env"
+# Load environment variables using shared loader (try multiple locations)
+if [ -f "${PROJECT_DIR:-}/.devcontainer/scripts/env-loader.sh" ] || [ -f ".devcontainer/scripts/env-loader.sh" ] || [ -f "/workspace/.devcontainer/scripts/env-loader.sh" ]; then
+    # Prefer project dir when available
+    if [ -f "${PROJECT_DIR:-}/.devcontainer/scripts/env-loader.sh" ]; then
+        # shellcheck disable=SC1090
+        source "$PROJECT_DIR/.devcontainer/scripts/env-loader.sh"
+        load_project_env "$PROJECT_DIR"
+    elif [ -f ".devcontainer/scripts/env-loader.sh" ]; then
+        # shellcheck disable=SC1090
+        source ".devcontainer/scripts/env-loader.sh"
+        load_project_env "$PROJECT_DIR"
+    else
+        # shellcheck disable=SC1090
+        source "/workspace/.devcontainer/scripts/env-loader.sh"
+        load_project_env "$PROJECT_DIR"
+    fi
 fi
 
 # Configuration with defaults

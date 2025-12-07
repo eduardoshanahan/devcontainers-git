@@ -10,7 +10,7 @@ declare -A required_vars=(
 # Optional variables with default values and validation rules
 declare -A optional_vars=(
     ["CONTAINER_HOSTNAME"]="dev|^[a-zA-Z][a-zA-Z0-9-]*$"
-    ["EDITOR_CHOICE"]="cursor|^(code|cursor)$"
+    ["EDITOR_CHOICE"]="cursor|^(code|cursor|antigravity)$"
     ["GIT_USER_NAME"]="Dev User|^[a-zA-Z0-9 ._-]+$"
     ["GIT_USER_EMAIL"]="dev@example.com|^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
     ["DOCKER_IMAGE_NAME"]="dev-container|^[a-z0-9][a-z0-9._-]+$"

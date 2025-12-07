@@ -8,10 +8,10 @@
 
 # Environment files
 .env
-.env.*
+# .env.*
 !.env.example
 .devcontainer/config/.env
-.devcontainer/.env
+# .devcontainer/.env
 
 # Devcontainer markers
 .devcontainer/.onCreateCommandMarker
@@ -93,3 +93,7 @@ env/
 .Trashes
 ehthumbs.db
 Thumbs.db 
+
+# LM conversations
+lm_conversations/
+working_memory.md
