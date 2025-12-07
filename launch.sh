@@ -35,36 +35,36 @@ check_var() {
   info "$var_name: $var_value"
 }
 
-# Check if .env file exists
-if [ ! -f .devcontainer/config/.env ]; then
-  error ".devcontainer/config/.env file not found!"
-  error "Please create it with the following variables:"
-  cat <<EOF
-# User configuration
-HOST_USERNAME=your_username
-HOST_UID=your_uid
-HOST_GID=your_gid
+# Robust loader: try multiple candidate locations for env-loader.sh and call load_project_env
+try_load_env_loader() {
+    # Candidate locations (project-level and workspace-level)
+    candidates=()
+    [ -n "${PROJECT_DIR:-}" ] && candidates+=("$PROJECT_DIR/.devcontainer/scripts/env-loader.sh")
+    candidates+=(".devcontainer/scripts/env-loader.sh" "/workspace/.devcontainer/scripts/env-loader.sh" "$PWD/.devcontainer/scripts/env-loader.sh")
 
-# Git configuration
-GIT_USER_NAME="Your Name"
-GIT_USER_EMAIL="your.email@example.com"
-GIT_REMOTE_URL="git@github.com:username/repo.git"  # or https://github.com/username/repo.git
+    for f in "${candidates[@]}"; do
+        if [ -f "$f" ]; then
+            info "Sourcing env loader from $f"
+            # shellcheck disable=SC1090
+            source "$f"
+            # determine project path to pass to loader
+            if [ -n "${PROJECT_DIR:-}" ]; then
+                load_project_env "$PROJECT_DIR"
+            elif [ -d "/workspace" ]; then
+                load_project_env "/workspace"
+            else
+                load_project_env "$PWD"
+            fi
+            return 0
+        fi
+    done
 
-# Editor configuration
-EDITOR_CHOICE=code  # Use 'code' for VS Code or 'cursor' for Cursor
+    error "env-loader.sh not found in candidate locations: ${candidates[*]}"
+    return 1
+}
 
-# Docker configuration
-DOCKER_IMAGE_NAME=your-image-name
-DOCKER_IMAGE_TAG=your-tag
-EOF
-  exit 1
-fi
-
-# Load environment variables from .devcontainer/config/.env
-info "Loading environment variables..."
-set -a
-source .devcontainer/config/.env
-set +a
+# call loader
+try_load_env_loader || exit 1
 
 # Export variables explicitly for devcontainer
 export HOST_USERNAME
@@ -96,8 +96,8 @@ for var in "${required_vars[@]}"; do
 done
 
 # Validate editor choice
-if [ "${EDITOR_CHOICE}" != "code" ] && [ "${EDITOR_CHOICE}" != "cursor" ]; then
-  error "EDITOR_CHOICE must be set to either 'code' or 'cursor' in .devcontainer/config/.env"
+if [ "${EDITOR_CHOICE}" != "code" ] && [ "${EDITOR_CHOICE}" != "cursor" ] && [ "${EDITOR_CHOICE}" != "antigravity" ]; then
+  error "EDITOR_CHOICE must be set to either 'code' or 'cursor' or 'antigravity' in .devcontainer/config/.env"
   exit 1
 fi
 
@@ -106,8 +106,10 @@ if ! command -v "${EDITOR_CHOICE}" &>/dev/null; then
   error "${EDITOR_CHOICE} is not installed!"
   if [ "${EDITOR_CHOICE}" = "code" ]; then
     error "Please install VS Code from https://code.visualstudio.com/"
-  else
+  elif [ "${EDITOR_CHOICE}" = "cursor" ]; then
     error "Please install Cursor from https://cursor.sh"
+  elif [ "${EDITOR_CHOICE}" = "antigravity" ]; then
+    error "Please install Antigravity from https://antigravity"
   fi
   exit 1
 fi
@@ -123,9 +125,11 @@ fi
 info "Launching ${EDITOR_CHOICE}..."
 if [ "${EDITOR_CHOICE}" = "code" ]; then
   code "${PWD}" >/dev/null 2>&1 &
+elif [ "${EDITOR_CHOICE}" = "antigravity" ]; then
+  antigravity "${PWD}" >/dev/null 2>&1 &
 else
   cursor "${PWD}" --no-sandbox >/dev/null 2>&1 &
 fi
 
 success "${EDITOR_CHOICE} launched successfully!"
-disown 
+disown

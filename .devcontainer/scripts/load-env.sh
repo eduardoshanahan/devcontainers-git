@@ -1,9 +1,49 @@
 #!/bin/bash
 
-# Load environment variables from .env file if it exists
-if [ -f .devcontainer/config/.env ]; then
+# Load environment variables from project root .env if present (authoritative)
+if [ -f .env ]; then
+    echo "Loading environment variables from .env file..."
+    set -a
+    # shellcheck disable=SC1090
+    source .env
+    set +a
+elif [ -f .devcontainer/config/.env ]; then
     echo "Loading environment variables from .devcontainer/config/.env file..."
-    export $(cat .devcontainer/config/.env | grep -v '^#' | xargs)
+    set -a
+    # shellcheck disable=SC1090
+    source .devcontainer/config/.env
+    set +a
+fi
+
+# Additionally, fill missing vars from .devcontainer/config/.env without overwriting root .env
+if [ -f .devcontainer/config/.env ]; then
+    while IFS= read -r line || [ -n "$line" ]; do
+        trimmed="$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+        [ -z "$trimmed" ] && continue
+        case "$trimmed" in \#*) continue ;; esac
+        key="${trimmed%%=*}"
+        key="$(echo "$key" | xargs)"
+        if [ -z "${!key:-}" ]; then
+            eval "export $trimmed"
+        fi
+    done < .devcontainer/config/.env
+fi
+
+# Use shared loader if available, otherwise fallback to existing behavior
+if [ -f ".devcontainer/scripts/env-loader.sh" ]; then
+    # shellcheck disable=SC1090
+    source ".devcontainer/scripts/env-loader.sh"
+    load_project_env "$(pwd)"
+elif [ -f .env ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source .env
+    set +a
+elif [ -f .devcontainer/config/.env ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source .devcontainer/config/.env
+    set +a
 fi
 
 # Set defaults for container resource limits if not defined
@@ -24,4 +64,4 @@ echo "  Shared Memory: $CONTAINER_SHM_SIZE"
 echo "  Hostname: $CONTAINER_HOSTNAME"
 echo "  Python: $PYTHON_VERSION"
 echo "  Ansible: $ANSIBLE_VERSION"
-echo "  Ansible Lint: $ANSIBLE_LINT_VERSION" 
+echo "  Ansible Lint: $ANSIBLE_LINT_VERSION"
