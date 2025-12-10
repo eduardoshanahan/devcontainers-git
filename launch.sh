@@ -96,22 +96,19 @@ if ! command -v "${EDITOR_CHOICE}" &>/dev/null; then
   exit 1
 fi
 
-# Clean up any existing containers using our image
-if docker ps -a | grep -q "${DOCKER_IMAGE_NAME}"; then
-  info "Cleaning up existing containers..."
-  docker ps -a | grep "${DOCKER_IMAGE_NAME}" | cut -d' ' -f1 | xargs -r docker stop
-  docker ps -a | grep "${DOCKER_IMAGE_NAME}" | cut -d' ' -f1 | xargs -r docker rm
-fi
+# Launch the editor (let Dev Containers handle building/running the container)
+info "Launching ${EDITOR_CHOICE} with workspace ${PWD}..."
+case "${EDITOR_CHOICE}" in
+  code)
+    code "${PWD}" >/dev/null 2>&1 &
+    ;;
+  cursor)
+    cursor "${PWD}" --no-sandbox >/dev/null 2>&1 &
+    ;;
+  antigravity)
+    antigravity "${PWD}" >/dev/null 2>&1 &
+    ;;
+esac
 
-# Launch the editor
-info "Launching ${EDITOR_CHOICE}..."
-if [ "${EDITOR_CHOICE}" = "code" ]; then
-  code "${PWD}" >/dev/null 2>&1 &
-elif [ "${EDITOR_CHOICE}" = "antigravity" ]; then
-  antigravity "${PWD}" >/dev/null 2>&1 &
-else
-  cursor "${PWD}" --no-sandbox >/dev/null 2>&1 &
-fi
-
-success "${EDITOR_CHOICE} launched successfully!"
-disown
+success "Editor launched. Use the Dev Containers extension's \"Reopen in Container\" to start the environment."
+disown || true
