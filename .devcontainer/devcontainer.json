@@ -40,6 +40,10 @@
         "source=${localWorkspaceFolder}/.devcontainer,target=/home/${localEnv:HOST_USERNAME}/.devcontainer,type=bind,consistency=cached",
         "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:HOST_USERNAME}/.ssh,type=bind,consistency=cached"
     ],
+    "runEnvFile": [
+        "${localWorkspaceFolder}/.env",
+        "${localWorkspaceFolder}/.devcontainer/config/.env"
+    ],
     "postCreateCommand": "chmod +x ~/.devcontainer/scripts/post-create.sh && ~/.devcontainer/scripts/post-create.sh",
     "initializeCommand": "export CONTAINER_MEMORY=${localEnv:CONTAINER_MEMORY:-4g} && export CONTAINER_CPUS=${localEnv:CONTAINER_CPUS:-2} && export CONTAINER_SHM_SIZE=${localEnv:CONTAINER_SHM_SIZE:-2g} && export CONTAINER_HOSTNAME=${localEnv:CONTAINER_HOSTNAME:-devcontainers-git}",
     "containerEnv": {
