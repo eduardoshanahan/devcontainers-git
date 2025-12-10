@@ -1,61 +1,30 @@
 #!/bin/bash
+set -euo pipefail
 
-# Load environment variables from project root .env if present (authoritative)
-if [ -f .env ]; then
-    echo "Loading environment variables from .env file..."
-    set -a
-    # shellcheck disable=SC1090
-    source .env
-    set +a
-elif [ -f .devcontainer/config/.env ]; then
-    echo "Loading environment variables from .devcontainer/config/.env file..."
-    set -a
-    # shellcheck disable=SC1090
-    source .devcontainer/config/.env
-    set +a
+# Determine project directory (defaults to current working directory)
+PROJECT_DIR="${PROJECT_DIR:-$(pwd)}"
+ENV_LOADER="$PROJECT_DIR/.devcontainer/scripts/env-loader.sh"
+
+if [ ! -f "$ENV_LOADER" ]; then
+    echo "Error: env-loader.sh not found at $ENV_LOADER"
+    exit 1
 fi
 
-# Additionally, fill missing vars from .devcontainer/config/.env without overwriting root .env
-if [ -f .devcontainer/config/.env ]; then
-    while IFS= read -r line || [ -n "$line" ]; do
-        trimmed="$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-        [ -z "$trimmed" ] && continue
-        case "$trimmed" in \#*) continue ;; esac
-        key="${trimmed%%=*}"
-        key="$(echo "$key" | xargs)"
-        if [ -z "${!key:-}" ]; then
-            eval "export $trimmed"
-        fi
-    done < .devcontainer/config/.env
-fi
-
-# Use shared loader if available, otherwise fallback to existing behavior
-if [ -f ".devcontainer/scripts/env-loader.sh" ]; then
-    # shellcheck disable=SC1090
-    source ".devcontainer/scripts/env-loader.sh"
-    load_project_env "$(pwd)"
-elif [ -f .env ]; then
-    set -a
-    # shellcheck disable=SC1090
-    source .env
-    set +a
-elif [ -f .devcontainer/config/.env ]; then
-    set -a
-    # shellcheck disable=SC1090
-    source .devcontainer/config/.env
-    set +a
-fi
+# Load variables: project root .env is authoritative, .devcontainer/config/.env supplies defaults
+# shellcheck disable=SC1090
+source "$ENV_LOADER"
+load_project_env "$PROJECT_DIR"
 
 # Set defaults for container resource limits if not defined
-export CONTAINER_MEMORY=${CONTAINER_MEMORY:-4g}
-export CONTAINER_CPUS=${CONTAINER_CPUS:-2}
-export CONTAINER_SHM_SIZE=${CONTAINER_SHM_SIZE:-2g}
+export CONTAINER_MEMORY="${CONTAINER_MEMORY:-4g}"
+export CONTAINER_CPUS="${CONTAINER_CPUS:-2}"
+export CONTAINER_SHM_SIZE="${CONTAINER_SHM_SIZE:-2g}"
 
 # Set defaults for other variables if not defined
-export CONTAINER_HOSTNAME=${CONTAINER_HOSTNAME:-devcontainers-git}
-export PYTHON_VERSION=${PYTHON_VERSION:-3.11}
-export ANSIBLE_VERSION=${ANSIBLE_VERSION:-9.2.0}
-export ANSIBLE_LINT_VERSION=${ANSIBLE_LINT_VERSION:-25.1.3}
+export CONTAINER_HOSTNAME="${CONTAINER_HOSTNAME:-devcontainers-git}"
+export PYTHON_VERSION="${PYTHON_VERSION:-3.11}"
+export ANSIBLE_VERSION="${ANSIBLE_VERSION:-9.2.0}"
+export ANSIBLE_LINT_VERSION="${ANSIBLE_LINT_VERSION:-25.1.3}"
 
 echo "Container configuration:"
 echo "  Memory: $CONTAINER_MEMORY"

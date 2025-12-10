@@ -35,36 +35,18 @@ check_var() {
   info "$var_name: $var_value"
 }
 
-# Robust loader: try multiple candidate locations for env-loader.sh and call load_project_env
-try_load_env_loader() {
-    # Candidate locations (project-level and workspace-level)
-    candidates=()
-    [ -n "${PROJECT_DIR:-}" ] && candidates+=("$PROJECT_DIR/.devcontainer/scripts/env-loader.sh")
-    candidates+=(".devcontainer/scripts/env-loader.sh" "/workspace/.devcontainer/scripts/env-loader.sh" "$PWD/.devcontainer/scripts/env-loader.sh")
+# Load project environment via shared loader (root .env is authoritative)
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_LOADER="$PROJECT_DIR/.devcontainer/scripts/env-loader.sh"
 
-    for f in "${candidates[@]}"; do
-        if [ -f "$f" ]; then
-            info "Sourcing env loader from $f"
-            # shellcheck disable=SC1090
-            source "$f"
-            # determine project path to pass to loader
-            if [ -n "${PROJECT_DIR:-}" ]; then
-                load_project_env "$PROJECT_DIR"
-            elif [ -d "/workspace" ]; then
-                load_project_env "/workspace"
-            else
-                load_project_env "$PWD"
-            fi
-            return 0
-        fi
-    done
+if [ ! -f "$ENV_LOADER" ]; then
+  error "Cannot find env-loader at $ENV_LOADER"
+  exit 1
+fi
 
-    error "env-loader.sh not found in candidate locations: ${candidates[*]}"
-    return 1
-}
-
-# call loader
-try_load_env_loader || exit 1
+# shellcheck disable=SC1090
+source "$ENV_LOADER"
+load_project_env "$PROJECT_DIR"
 
 # Export variables explicitly for devcontainer
 export HOST_USERNAME

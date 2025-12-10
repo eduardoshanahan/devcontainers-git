@@ -1,35 +1,16 @@
 #!/bin/bash
 
-# Load environment variables: prefer workspace root .env then fill missing from .devcontainer/config/.env
-if [ -f "/workspace/.env" ]; then
-    # shellcheck disable=SC1090
-    source "/workspace/.env"
-fi
-
-if [ -f "/workspace/.devcontainer/config/.env" ]; then
-    while IFS= read -r line || [ -n "$line" ]; do
-        trimmed="$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-        [ -z "$trimmed" ] && continue
-        case "$trimmed" in \#*) continue ;; esac
-        key="${trimmed%%=*}"
-        key="$(echo "$key" | xargs)"
-        if [ -z "${!key:-}" ]; then
-            eval "export $trimmed"
-        fi
-    done < "/workspace/.devcontainer/config/.env"
-fi
-
-# Try to source shared env loader and apply project envs
+# Load environment variables via shared loader (project root .env is authoritative)
 if [ -f "/workspace/.devcontainer/scripts/env-loader.sh" ]; then
     # shellcheck disable=SC1090
     source "/workspace/.devcontainer/scripts/env-loader.sh"
     load_project_env "/workspace"
-elif [ -f "/workspace/.env" ]; then
-    # fallback: just source root .env
+elif [ -f "$HOME/.devcontainer/scripts/env-loader.sh" ]; then
     # shellcheck disable=SC1090
-    source "/workspace/.env"
+    source "$HOME/.devcontainer/scripts/env-loader.sh"
+    load_project_env "/workspace"
 else
-    echo "Warning: env-loader.sh and /workspace/.env not found; skipping env load"
+    echo "Warning: env-loader.sh not found; skipping environment load"
 fi
 
 # Validate environment variables
