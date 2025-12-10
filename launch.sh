@@ -24,17 +24,6 @@ info() {
   echo -e "${YELLOW}$1${NC}"
 }
 
-# Function to check if a variable is set
-check_var() {
-  local var_name="$1"
-  local var_value="$2"
-  if [ -z "$var_value" ]; then
-    error "$var_name is not set in .env"
-    return 1
-  fi
-  info "$var_name: $var_value"
-}
-
 # Load project environment via shared loader (root .env is authoritative)
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_LOADER="$PROJECT_DIR/.devcontainer/scripts/env-loader.sh"
@@ -70,24 +59,6 @@ export GIT_REMOTE_URL
 export EDITOR_CHOICE
 export DOCKER_IMAGE_NAME
 export DOCKER_IMAGE_TAG
-
-# Verify required variables
-required_vars=(
-  "HOST_USERNAME"
-  "HOST_UID"
-  "HOST_GID"
-  "GIT_USER_NAME"
-  "GIT_USER_EMAIL"
-  "GIT_REMOTE_URL"
-  "EDITOR_CHOICE"
-  "DOCKER_IMAGE_NAME"
-  "DOCKER_IMAGE_TAG"
-)
-
-# Check all required variables
-for var in "${required_vars[@]}"; do
-  check_var "$var" "${!var:-}" || exit 1
-done
 
 # Validate editor choice
 if [ "${EDITOR_CHOICE}" != "code" ] && [ "${EDITOR_CHOICE}" != "cursor" ] && [ "${EDITOR_CHOICE}" != "antigravity" ]; then

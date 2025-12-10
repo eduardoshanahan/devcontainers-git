@@ -32,11 +32,16 @@ fi
 
 # Configure Git if variables are set
 if [ -n "${GIT_USER_NAME:-}" ] && [ -n "${GIT_USER_EMAIL:-}" ]; then
-    echo -e "${GREEN}Configuring Git with:${COLOR_RESET}"
-    echo -e "  ${COLOR_BOLD}Name:${COLOR_RESET}  $GIT_USER_NAME"
-    echo -e "  ${COLOR_BOLD}Email:${COLOR_RESET} $GIT_USER_EMAIL"
-    git config --global user.name "$GIT_USER_NAME"
-    git config --global user.email "$GIT_USER_EMAIL"
+    REPO_DIR="/workspace"
+    if [ -d "$REPO_DIR/.git" ]; then
+        echo -e "${GREEN}Configuring Git (repo-local) with:${COLOR_RESET}"
+        echo -e "  ${COLOR_BOLD}Name:${COLOR_RESET}  $GIT_USER_NAME"
+        echo -e "  ${COLOR_BOLD}Email:${COLOR_RESET} $GIT_USER_EMAIL"
+        git -C "$REPO_DIR" config user.name "$GIT_USER_NAME"
+        git -C "$REPO_DIR" config user.email "$GIT_USER_EMAIL"
+    else
+        echo -e "${YELLOW}Warning:${COLOR_RESET} No git repository found in $REPO_DIR. Skipping git identity setup."
+    fi
 fi
 
 # Make scripts executable (existing entries)

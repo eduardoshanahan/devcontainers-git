@@ -14,15 +14,17 @@ else
 fi
 
 # Configure Git if variables are set
-# Configure Git if variables are set
 if [ -n "$GIT_USER_NAME" ] && [ -n "$GIT_USER_EMAIL" ]; then
-    echo "Configuring Git with:"
-    echo "  Name:  $GIT_USER_NAME"
-    echo "  Email: $GIT_USER_EMAIL"
-    # Ensure .gitconfig exists
-    touch ~/.gitconfig
-    git config --global user.name "$GIT_USER_NAME"
-    git config --global user.email "$GIT_USER_EMAIL"
+    REPO_DIR="/workspace"
+    if [ -d "$REPO_DIR/.git" ]; then
+        echo "Configuring repo-local Git identity:"
+        echo "  Name:  $GIT_USER_NAME"
+        echo "  Email: $GIT_USER_EMAIL"
+        git -C "$REPO_DIR" config user.name "$GIT_USER_NAME"
+        git -C "$REPO_DIR" config user.email "$GIT_USER_EMAIL"
+    else
+        echo "Warning: No git repository found in $REPO_DIR. Skipping git identity setup."
+    fi
 else
     echo "Warning: GIT_USER_NAME or GIT_USER_EMAIL not set. Git identity not configured."
 fi
