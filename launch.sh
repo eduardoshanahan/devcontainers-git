@@ -29,7 +29,7 @@ check_var() {
   local var_name="$1"
   local var_value="$2"
   if [ -z "$var_value" ]; then
-    error "$var_name is not set in .devcontainer/config/.env"
+    error "$var_name is not set in .env"
     return 1
   fi
   info "$var_name: $var_value"
@@ -47,6 +47,18 @@ fi
 # shellcheck disable=SC1090
 source "$ENV_LOADER"
 load_project_env "$PROJECT_DIR"
+
+# Validate environment variables before launching anything
+VALIDATOR="$PROJECT_DIR/.devcontainer/scripts/validate-env.sh"
+if [ -f "$VALIDATOR" ]; then
+  info "Validating environment variables..."
+  if ! bash "$VALIDATOR"; then
+    error "Environment validation failed. Please fix your .env values."
+    exit 1
+  fi
+else
+  info "Warning: validator not found at $VALIDATOR; skipping validation."
+fi
 
 # Export variables explicitly for devcontainer
 export HOST_USERNAME

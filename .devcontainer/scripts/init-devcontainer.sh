@@ -30,16 +30,6 @@ if [ "$loader_found" = false ]; then
     echo -e "${YELLOW}Warning: env-loader.sh not found; environment variables may be missing${COLOR_RESET}"
 fi
 
-# Validate environment variables (run as separate process)
-if [ -f "/workspace/.devcontainer/scripts/validate-env.sh" ]; then
-    if ! bash "/workspace/.devcontainer/scripts/validate-env.sh"; then
-        echo -e "${RED}Environment validation failed. Please check your .env file${COLOR_RESET}"
-        exit 1
-    fi
-else
-    echo -e "${YELLOW}Warning: validate-env.sh not found, skipping environment validation${COLOR_RESET}"
-fi
-
 # Configure Git if variables are set
 if [ -n "${GIT_USER_NAME:-}" ] && [ -n "${GIT_USER_EMAIL:-}" ]; then
     echo -e "${GREEN}Configuring Git with:${COLOR_RESET}"
