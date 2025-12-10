@@ -14,38 +14,21 @@ else
     YELLOW='\033[0;33m'
 fi
 
-# Load environment variables: prefer workspace root .env, then fill missing from .devcontainer/config/.env
-
-# Load project root .env first (authoritative), then apply .devcontainer defaults for missing vars
-if [ -f "/workspace/.env" ]; then
-    set -a
-    # shellcheck disable=SC1090
-    source "/workspace/.env"
-    set +a
-fi
-
-if [ -f "/workspace/.devcontainer/config/.env" ]; then
-    while IFS= read -r line || [ -n "$line" ]; do
-        trimmed="$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-        [ -z "$trimmed" ] && continue
-        case "$trimmed" in \#*) continue ;; esac
-        key="${trimmed%%=*}"
-        key="$(echo "$key" | xargs)"
-        if [ -z "${!key:-}" ]; then
-            eval "export $trimmed"
-        fi
-    done < "/workspace/.devcontainer/config/.env"
-fi
-
-# Source shared loader from available locations and load envs for /workspace
-for loader in "/workspace/.devcontainer/scripts/env-loader.sh" "/workspace/.env" ".devcontainer/scripts/env-loader.sh"; do
+# Load environment variables via shared loader (project root .env is authoritative)
+loader_found=false
+for loader in "/workspace/.devcontainer/scripts/env-loader.sh" "$HOME/.devcontainer/scripts/env-loader.sh"; do
     if [ -f "$loader" ]; then
         # shellcheck disable=SC1090
-        source "/workspace/.devcontainer/scripts/env-loader.sh"
+        source "$loader"
         load_project_env "/workspace"
+        loader_found=true
         break
     fi
 done
+
+if [ "$loader_found" = false ]; then
+    echo -e "${YELLOW}Warning: env-loader.sh not found; environment variables may be missing${COLOR_RESET}"
+fi
 
 # Validate environment variables (run as separate process)
 if [ -f "/workspace/.devcontainer/scripts/validate-env.sh" ]; then
