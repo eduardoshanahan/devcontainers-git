@@ -13,17 +13,6 @@ else
     echo "Warning: env-loader.sh not found; skipping environment load"
 fi
 
-# Validate environment variables
-if [ -f "/workspace/.devcontainer/scripts/validate-env.sh" ]; then
-    source "/workspace/.devcontainer/scripts/validate-env.sh"
-    if [ $? -ne 0 ]; then
-        echo "Environment validation failed. Please check your .env file"
-        exit 1
-    fi
-else
-    echo "Warning: validate-env.sh not found, skipping environment validation"
-fi
-
 # Configure Git if variables are set
 # Configure Git if variables are set
 if [ -n "$GIT_USER_NAME" ] && [ -n "$GIT_USER_EMAIL" ]; then
