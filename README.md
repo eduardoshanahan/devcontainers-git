@@ -53,11 +53,50 @@ The project addresses the challenge of maintaining consistent development enviro
     - Ensures the local environment is correctly prepped before starting the container.
 
 ### 3. Git & SSH Integration
-- Seamlessly forwards SSH agents to the container, allowing secure GitHub interactions without storing keys inside the image.
+- Seamlessly forwards SSH agents to the container, allowing secure GitHub interactions without storing keys inside the image. When `SSH_AUTH_SOCK` is forwarded from the host we reuse it; only if it is missing do we start a fresh agent and manage keys locally.
 - Automates Git configuration (user name, email) based on environment variables.
 
 ### 4. Custom Synchronization
 - Features a `sync_git.sh` script to safely manage Git operations in environments where an external file syncer (like Synology Drive) is also active, preventing data corruption or conflicts.
 
+## Quick Start
+
+1. **Copy the env template:** `cp .env.example .env`
+2. **Fill in required values:** edit `.env` so `HOST_USERNAME`, UID/GID, git identity, remotes, and editor choice match your machine (see the comments inside the file).
+3. **Launch your editor via the helper:** run `./launch.sh`. It loads `.env`, validates it, and then opens VS Code/Cursor/Antigravity pointing at this folder.
+4. **Reopen in container:** inside the editor, use the Dev Containers extension’s “Reopen in Container” command; it reuses the values validated in step 3.
+5. **Work normally:** run `./scripts/sync_git.sh` whenever you need to pull/push (configure `GIT_SYNC_REMOTES`/`GIT_SYNC_PUSH_REMOTES` if you use multiple remotes). SSH agent forwarding just works as long as your host exposes `SSH_AUTH_SOCK`.
+
 ## Usage
 Users clone this repository, configure a `.env` file with their specific user details (UID/GID, Git credentials), and use the provided scripts to launch their editor. The editor then reopens the project inside the defined Docker container, providing a fully featured development workspace.
+
+### Keeping the repository in sync
+
+Run `./scripts/sync_git.sh` whenever you want to fast-forward the local checkout or publish your current branch. Configure the remotes the script should touch via `.env`:
+
+```env
+# Pull from both GitHub and LAN mirrors (GitHub is the primary remote here)
+GIT_SYNC_REMOTES="origin lan"
+
+# Optionally push the current branch to both mirrors after syncing
+GIT_SYNC_PUSH_REMOTES="origin lan"
+
+# Provide a URL if the script needs to auto-add the LAN remote
+GIT_REMOTE_URL_LAN="ssh://git@192.168.1.10:/volume1/git/devcontainers-git.git"
+```
+
+Once configured, you can run:
+
+```bash
+# standard update (requires a clean working tree)
+./scripts/sync_git.sh
+
+# overwrite local changes with the remote version
+FORCE_PULL=true ./scripts/sync_git.sh
+```
+
+- The script only touches the current repository (no global git config, no backups).  
+- It ensures every remote listed in `GIT_SYNC_REMOTES` exists (using `GIT_REMOTE_URL` or `GIT_REMOTE_URL_<REMOTE>` values if it needs to add one).  
+- The first remote in `GIT_SYNC_REMOTES` is treated as the primary upstream for pulls/resets; additional remotes are rebased in sequence so they stay in sync.  
+- Set `GIT_SYNC_PUSH_REMOTES` to automatically push the branch after syncing (leave empty to skip pushes).  
+- If you have uncommitted changes it exits with an error unless you re-run it with `FORCE_PULL=true`.
