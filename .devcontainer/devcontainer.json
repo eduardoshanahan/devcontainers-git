@@ -50,19 +50,20 @@
         "USERNAME": "${localEnv:HOST_USERNAME}",
         "USER_UID": "${localEnv:HOST_UID}",
         "USER_GID": "${localEnv:HOST_GID}",
-        "CONTAINER_HOSTNAME": "${localEnv:CONTAINER_HOSTNAME:-devcontainers-git}",
+        "CONTAINER_HOSTNAME": "${localEnv:CONTAINER_HOSTNAME:-devcontainers-git-${localEnv:EDITOR_CHOICE:code}}",
         "GIT_USER_NAME": "${localEnv:GIT_USER_NAME}",
         "GIT_USER_EMAIL": "${localEnv:GIT_USER_EMAIL}",
-        "GIT_REMOTE_URL": "${localEnv:GIT_REMOTE_URL:-}",
-        "DOCKER_IMAGE_NAME": "${localEnv:DOCKER_IMAGE_NAME:-devcontainers-git}",
-        "DOCKER_IMAGE_TAG": "${localEnv:DOCKER_IMAGE_TAG:-latest}"
-    },
-    "runArgs": [
-        "--hostname=${localEnv:CONTAINER_HOSTNAME:devcontainers-git}",
-        "--env=SSH_AUTH_SOCK=${localEnv:SSH_AUTH_SOCK}",
-        "--memory=${localEnv:CONTAINER_MEMORY:4g}",
-        "--cpus=${localEnv:CONTAINER_CPUS:2}",
-        "--shm-size=${localEnv:CONTAINER_SHM_SIZE:2g}"
+            "GIT_REMOTE_URL": "${localEnv:GIT_REMOTE_URL:-}",
+            "DOCKER_IMAGE_NAME": "${localEnv:DOCKER_IMAGE_NAME:-devcontainer-git-${localEnv:EDITOR_CHOICE:code}}",
+            "DOCKER_IMAGE_TAG": "${localEnv:DOCKER_IMAGE_TAG:-latest}"
+        },
+        "runArgs": [
+            "--name=${localEnv:DOCKER_IMAGE_NAME:devcontainer-git-code}",
+            "--hostname=${localEnv:CONTAINER_HOSTNAME:devcontainers-git}",
+            "--env=SSH_AUTH_SOCK=${localEnv:SSH_AUTH_SOCK}",
+            "--memory=${localEnv:CONTAINER_MEMORY:4g}",
+            "--cpus=${localEnv:CONTAINER_CPUS:2}",
+            "--shm-size=${localEnv:CONTAINER_SHM_SIZE:2g}"
     ],
     "forwardPorts": [],
     "remoteEnv": {

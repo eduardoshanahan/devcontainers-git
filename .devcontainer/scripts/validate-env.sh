@@ -14,11 +14,11 @@ declare -A required_vars=(
 
 # Optional variables with default values and validation rules
 declare -A optional_vars=(
-    ["CONTAINER_HOSTNAME"]="devcontainers-git|^[a-zA-Z][a-zA-Z0-9-]*$"
+    ["CONTAINER_HOSTNAME"]="devcontainers-git-${EDITOR_CHOICE:-code}|^[a-zA-Z][a-zA-Z0-9-]*$"
     ["CONTAINER_MEMORY"]="4g|^[0-9]+[gGmM]$"
     ["CONTAINER_CPUS"]="2|^[0-9]+(\\.[0-9]+)?$"
     ["CONTAINER_SHM_SIZE"]="2g|^[0-9]+[gGmM]$"
-    ["DOCKER_IMAGE_NAME"]="devcontainers-git|^[a-z0-9][a-z0-9._-]+$"
+    ["DOCKER_IMAGE_NAME"]="devcontainer-git-${EDITOR_CHOICE:-code}|^[a-z0-9][a-z0-9._-]+$"
     ["DOCKER_IMAGE_TAG"]="latest|^[a-zA-Z0-9][a-zA-Z0-9._-]+$"
 )
 
