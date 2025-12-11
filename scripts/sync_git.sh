@@ -51,7 +51,9 @@ normalize_list() {
             result+=("$item")
         fi
     done
-    printf '%s\n' "${result[@]}"
+    if [ "${#result[@]}" -gt 0 ]; then
+        printf '%s\n' "${result[@]}"
+    fi
 }
 
 mapfile -t remote_list < <(normalize_list "$GIT_SYNC_REMOTES")
