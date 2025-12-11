@@ -62,7 +62,7 @@ The project addresses the challenge of maintaining consistent development enviro
 ## Quick Start
 
 1. **Copy the env template:** `cp .env.example .env`
-2. **Fill in required values:** edit `.env` so `HOST_USERNAME`, UID/GID, git identity, remotes, and editor choice match your machine (see the comments inside the file).
+2. **Fill in required values:** edit `.env` so `PROJECT_NAME`, `HOST_USERNAME`, UID/GID, git identity, remotes, and editor choice match your machine (see the comments inside the file). `CONTAINER_HOSTNAME` and `DOCKER_IMAGE_NAME` already derive from `PROJECT_NAME` + `EDITOR_CHOICE`, so you only tweak them if you need a custom naming scheme.
 3. **Launch your editor via the helper:** run `./launch.sh`. It loads `.env`, validates it, and then opens VS Code/Cursor/Antigravity pointing at this folder.
 4. **Reopen in container:** inside the editor, use the Dev Containers extension’s “Reopen in Container” command; it reuses the values validated in step 3.
 5. **Work normally:** run `./scripts/sync_git.sh` whenever you need to pull/push (configure `GIT_SYNC_REMOTES`/`GIT_SYNC_PUSH_REMOTES` if you use multiple remotes). SSH agent forwarding just works as long as your host exposes `SSH_AUTH_SOCK`.
@@ -82,7 +82,7 @@ GIT_SYNC_REMOTES="origin lan"
 GIT_SYNC_PUSH_REMOTES="origin lan"
 
 # Provide a URL if the script needs to auto-add the LAN remote
-GIT_REMOTE_URL_LAN="ssh://git@192.168.1.10:/volume1/git/devcontainers-git.git"
+GIT_REMOTE_URL_LAN="ssh://git@192.168.1.10:/volume1/git/${PROJECT_NAME}.git"
 ```
 
 Once configured, you can run:
