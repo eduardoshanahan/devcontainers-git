@@ -62,10 +62,17 @@ The project addresses the challenge of maintaining consistent development enviro
 ## Quick Start
 
 1. **Copy the env template:** `cp .env.example .env`
-2. **Fill in required values:** edit `.env` so `PROJECT_NAME`, `HOST_USERNAME`, UID/GID, git identity, remotes, and editor choice match your machine (see the comments inside the file). `CONTAINER_HOSTNAME` and `DOCKER_IMAGE_NAME` already derive from `PROJECT_NAME` + `EDITOR_CHOICE`, so you only tweak them if you need a custom naming scheme.
+2. **Fill in required values:** edit `.env` so `PROJECT_NAME`, `HOST_USERNAME`, UID/GID, git identity, editor choice, container resource limits, and Docker image values match your machine (see the comments inside the file). Git remotes are optional unless you use `sync_git.sh`. `CONTAINER_HOSTNAME` and `DOCKER_IMAGE_NAME` already derive from `PROJECT_NAME` + `EDITOR_CHOICE`, so you only tweak them if you need a custom naming scheme.
 3. **Launch your editor via the helper:** run `./launch.sh`. It loads `.env`, validates it, and then opens VS Code/Cursor/Antigravity pointing at this folder.
 4. **Reopen in container:** inside the editor, use the Dev Containers extension’s “Reopen in Container” command; it reuses the values validated in step 3.
-5. **Work normally:** run `./scripts/sync_git.sh` whenever you need to pull/push (configure `GIT_SYNC_REMOTES`/`GIT_SYNC_PUSH_REMOTES` if you use multiple remotes). SSH agent forwarding just works as long as your host exposes `SSH_AUTH_SOCK`.
+5. **Ensure SSH agent forwarding is available:** the container bind-mounts `SSH_AUTH_SOCK`, so the devcontainer will fail to start if your host has no SSH agent running. Start an agent (and add keys) on the host before reopening in container.
+6. **Work normally:** run `./scripts/sync_git.sh` whenever you need to pull/push (configure `GIT_SYNC_REMOTES`/`GIT_SYNC_PUSH_REMOTES` if you use multiple remotes). SSH agent forwarding just works as long as your host exposes `SSH_AUTH_SOCK`.
+
+## Launch Scripts
+
+- `./launch.sh`: loads `.env`, validates it, then opens VS Code, Cursor, or Antigravity on the host.
+- `./devcontainer-launch.sh`: uses the devcontainer CLI to open an interactive shell inside the container. Requires `devcontainer` CLI (`npm install -g @devcontainers/cli`).
+- `./claude-launch.sh`: starts Claude Code inside the container via the devcontainer CLI. Requires `devcontainer` CLI on the host and Claude installed in the container (post-create script installs it by default unless skipped).
 
 ## Usage
 Users clone this repository, configure a `.env` file with their specific user details (UID/GID, Git credentials), and use the provided scripts to launch their editor. The editor then reopens the project inside the defined Docker container, providing a fully featured development workspace.

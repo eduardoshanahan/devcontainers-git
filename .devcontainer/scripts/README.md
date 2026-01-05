@@ -60,8 +60,8 @@ Manages SSH agent configuration:
 
 Validates environment variables:
 
-- Checks required variables (HOST_USERNAME, HOST_UID, HOST_GID)
-- Validates optional variables with defaults
+- Checks required variables (PROJECT_NAME, HOST_USERNAME, HOST_UID, HOST_GID, CONTAINER_HOSTNAME, CONTAINER_MEMORY, CONTAINER_CPUS, CONTAINER_SHM_SIZE, GIT_USER_NAME, GIT_USER_EMAIL, EDITOR_CHOICE, DOCKER_IMAGE_NAME, DOCKER_IMAGE_TAG)
+- Validates optional variables with defaults (GIT_REMOTE_URL)
 - Uses regex patterns for validation
 - Provides detailed error messages
 - Returns non-zero exit code on validation failure

@@ -9,6 +9,11 @@
             "USER_GID": "${localEnv:HOST_GID}"
         }
     },
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "lts"
+        }
+    },
     "customizations": {
         "vscode": {
             "settings": {
@@ -38,35 +43,36 @@
     "workspaceFolder": "/workspace",
     "mounts": [
         "source=${localWorkspaceFolder}/.devcontainer,target=/home/${localEnv:HOST_USERNAME}/.devcontainer,type=bind,consistency=cached",
-        "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:HOST_USERNAME}/.ssh,type=bind,consistency=cached"
-    ],
-    "runEnvFile": [
-        "${localWorkspaceFolder}/.env",
-        "${localWorkspaceFolder}/.devcontainer/config/.env"
+        "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:HOST_USERNAME}/.ssh,type=bind,consistency=cached",
+        "source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind"
     ],
     "postCreateCommand": "chmod +x ~/.devcontainer/scripts/post-create.sh && ~/.devcontainer/scripts/post-create.sh",
-    "initializeCommand": "export CONTAINER_MEMORY=${localEnv:CONTAINER_MEMORY:-4g} && export CONTAINER_CPUS=${localEnv:CONTAINER_CPUS:-2} && export CONTAINER_SHM_SIZE=${localEnv:CONTAINER_SHM_SIZE:-2g} && export CONTAINER_HOSTNAME=${localEnv:CONTAINER_HOSTNAME:-devcontainers-git}",
+    "postStopCommand": "/workspace/.devcontainer/scripts/post-stop.sh",
+    "shutdownAction": "stopContainer",
+    "initializeCommand": "export CONTAINER_MEMORY=${localEnv:CONTAINER_MEMORY} && export CONTAINER_CPUS=${localEnv:CONTAINER_CPUS} && export CONTAINER_SHM_SIZE=${localEnv:CONTAINER_SHM_SIZE} && export CONTAINER_HOSTNAME=${localEnv:CONTAINER_HOSTNAME}",
     "containerEnv": {
         "USERNAME": "${localEnv:HOST_USERNAME}",
         "USER_UID": "${localEnv:HOST_UID}",
         "USER_GID": "${localEnv:HOST_GID}",
-        "CONTAINER_HOSTNAME": "${localEnv:CONTAINER_HOSTNAME:-devcontainers-git-${localEnv:EDITOR_CHOICE:code}}",
+        "CONTAINER_HOSTNAME": "${localEnv:CONTAINER_HOSTNAME}",
         "GIT_USER_NAME": "${localEnv:GIT_USER_NAME}",
         "GIT_USER_EMAIL": "${localEnv:GIT_USER_EMAIL}",
-            "GIT_REMOTE_URL": "${localEnv:GIT_REMOTE_URL:-}",
-            "DOCKER_IMAGE_NAME": "${localEnv:DOCKER_IMAGE_NAME:-devcontainer-git-${localEnv:EDITOR_CHOICE:code}}",
-            "DOCKER_IMAGE_TAG": "${localEnv:DOCKER_IMAGE_TAG:-latest}"
-        },
-        "runArgs": [
-            "--name=${localEnv:DOCKER_IMAGE_NAME:devcontainer-git-code}",
-            "--hostname=${localEnv:CONTAINER_HOSTNAME:devcontainers-git}",
-            "--env=SSH_AUTH_SOCK=${localEnv:SSH_AUTH_SOCK}",
-            "--memory=${localEnv:CONTAINER_MEMORY:4g}",
-            "--cpus=${localEnv:CONTAINER_CPUS:2}",
-            "--shm-size=${localEnv:CONTAINER_SHM_SIZE:2g}"
+        "GIT_REMOTE_URL": "${localEnv:GIT_REMOTE_URL}",
+        "DOCKER_IMAGE_NAME": "${localEnv:DOCKER_IMAGE_NAME}",
+        "DOCKER_IMAGE_TAG": "${localEnv:DOCKER_IMAGE_TAG}"
+    },
+    "runArgs": [
+        "--name=${localEnv:DOCKER_IMAGE_NAME}",
+        "--hostname=${localEnv:CONTAINER_HOSTNAME}",
+        "--env=SSH_AUTH_SOCK=/ssh-agent",
+        "--memory=${localEnv:CONTAINER_MEMORY}",
+        "--cpus=${localEnv:CONTAINER_CPUS}",
+        "--shm-size=${localEnv:CONTAINER_SHM_SIZE}",
+        "--env-file=${localWorkspaceFolder}/.env",
+        "--env-file=${localWorkspaceFolder}/.devcontainer/config/.env"
     ],
     "forwardPorts": [],
     "remoteEnv": {
-        "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}"
+        "SSH_AUTH_SOCK": "/ssh-agent"
     }
 }
