@@ -12,10 +12,10 @@ UID/GID matching, SSH agent forwarding, and optional sync helpers.
 1. Copy `.env.example` to `.env`.
 2. Fill in `.env` with your host user, UID/GID, Git identity, editor choice,
    container resource limits, and image naming values.
-3. Run `./launch.sh`.
+3. Run `./editor-launch.sh`.
 4. In your editor, choose "Reopen in Container".
 5. Ensure `SSH_AUTH_SOCK` is available on the host before reopening.
-6. Use `./scripts/sync_git.sh` when you need a safe pull or push.
+6. Use `./scripts/sync-git.sh` when you need a safe pull or push.
 
 ## Key Docs
 
@@ -23,7 +23,7 @@ UID/GID matching, SSH agent forwarding, and optional sync helpers.
 - Usage: [how to use this project.md](documentation/how%20to%20use%20this%20project.md)
 - Testing: [how to test.md](documentation/how%20to%20test.md)
 - Troubleshooting: [troubleshooting.md](documentation/troubleshooting.md)
-- Git sync helper: [how to use sync_git.md](documentation/how%20to%20use%20sync_git.md)
+- Git sync helper: [how to use sync-git.md](documentation/how%20to%20use%20sync-git.md)
 - File sync and ownership: [file sync and ownership.md](documentation/file%20sync%20and%20ownership.md)
 - Image cleanup: [how to clean devcontainer images.md](documentation/how%20to%20clean%20devcontainer%20images.md)
 - Devcontainer CLI: [how to use devcontainer cli.md](documentation/how%20to%20use%20devcontainer%20cli.md)
@@ -32,10 +32,10 @@ UID/GID matching, SSH agent forwarding, and optional sync helpers.
 
 ## Helpful Scripts
 
-- Devcontainer launcher: `./launch.sh`
+- Devcontainer launcher: `./editor-launch.sh`
 - CLI shell into container: `./devcontainer-launch.sh`
 - Claude Code launcher: `./claude-launch.sh`
-- Git sync helper: `./scripts/sync_git.sh`
+- Git sync helper: `./scripts/sync-git.sh`
 - Devcontainer image cleanup: `./scripts/clean-devcontainer-images.sh`
 - SSH and Git verifier (in container): `./.devcontainer/scripts/verify-git-ssh.sh`
 

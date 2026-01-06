@@ -17,5 +17,5 @@ environment before opening the devcontainer.
 
 ## Quick smoke checks
 
-- Confirm your editor opens with `./launch.sh`.
+- Confirm your editor opens with `./editor-launch.sh`.
 - Reopen in container and confirm `git status` works in `/workspace`.

@@ -51,7 +51,7 @@ fi
 if ! command -v devcontainer >/dev/null 2>&1; then
   error "devcontainer CLI is not installed!"
   info "Please install it with: npm install -g @devcontainers/cli"
-  info "Or use ./launch.sh to work with VS Code/Cursor instead."
+  info "Or use ./editor-launch.sh to work with VS Code/Cursor instead."
   exit 1
 fi
 

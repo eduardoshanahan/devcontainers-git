@@ -196,6 +196,10 @@ If a required environment variable is missing:
 
 - No emoji characters in markdown content; use text alternatives instead
 
+### Shell Scripts
+
+- Script filenames use kebab-case (hyphen) for consistency
+
 ---
 
 ## 8. Tooling & Execution Assumptions
