@@ -3,17 +3,8 @@
 
 # Use custom format
 format = """
-[╭─](bold blue)\
-$username\
-$hostname\
-$directory\
-$git_branch\
-$git_status\
-$nodejs\
-$python\
-$docker_context\
-[╰─](bold blue)\
-$character"""
+[╭─](bold blue) devcontainers-git $directory -> $git_branch$git_status
+[╰─](bold blue)$character"""
 
 # Disable the package module, hiding it from the prompt
 [package]
@@ -46,13 +37,14 @@ truncation_length = 3
 
 # Git branch format
 [git_branch]
-symbol = " "
+symbol = ""
 style = "bold purple"
+format = "[$branch]($style)"
 
 # Git status format
 [git_status]
 style = "bold red"
-format = '([\[$all_status$ahead_behind\] ]($style) )'
+format = '([\[$all_status$ahead_behind\]]($style))'
 disabled = false
 
 # Node.js format
