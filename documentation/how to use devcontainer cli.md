@@ -6,7 +6,7 @@ inside the container.
 ## Prerequisites
 
 - Install the CLI on the host: `npm install -g @devcontainers/cli`
-- Ensure `.env` is valid (use `./launch.sh` once to validate).
+- Ensure `.env` is valid (run `./.devcontainer/scripts/validate-env.sh`).
 
 ## Run the helper
 
