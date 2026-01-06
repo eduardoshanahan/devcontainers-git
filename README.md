@@ -25,6 +25,7 @@ UID/GID matching, SSH agent forwarding, and optional sync helpers.
 - Troubleshooting: [troubleshooting.md](documentation/troubleshooting.md)
 - Git sync helper: [how to use sync_git.md](documentation/how%20to%20use%20sync_git.md)
 - File sync and ownership: [file sync and ownership.md](documentation/file%20sync%20and%20ownership.md)
+- Image cleanup: [how to clean devcontainer images.md](documentation/how%20to%20clean%20devcontainer%20images.md)
 - Devcontainer CLI: [how to use devcontainer cli.md](documentation/how%20to%20use%20devcontainer%20cli.md)
 - Claude Code: [how to use claude.md](documentation/how%20to%20use%20claude.md)
 - Devcontainer scripts: [.devcontainer/scripts/README.md](.devcontainer/scripts/README.md)
@@ -35,6 +36,7 @@ UID/GID matching, SSH agent forwarding, and optional sync helpers.
 - CLI shell into container: `./devcontainer-launch.sh`
 - Claude Code launcher: `./claude-launch.sh`
 - Git sync helper: `./scripts/sync_git.sh`
+- Devcontainer image cleanup: `./scripts/clean-devcontainer-images.sh`
 - SSH and Git verifier (in container): `./.devcontainer/scripts/verify-git-ssh.sh`
 
 ## Why do I have this project?
