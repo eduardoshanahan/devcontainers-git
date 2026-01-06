@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 # Enable strict mode
-set -euo pipefail
+set -eu
 
 # Colors for output
 RED='\033[0;31m'
@@ -10,12 +10,12 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Print functions
-info() { echo -e "${YELLOW}  $1${NC}"; }
-success() { echo -e "${GREEN} $1${NC}"; }
-error() { echo -e "${RED} $1${NC}" >&2; }
+info() { printf '%b\n' "${YELLOW}  $1${NC}"; }
+success() { printf '%b\n' "${GREEN} $1${NC}"; }
+error() { printf '%b\n' "${RED} $1${NC}" >&2; }
 
 # Get the actual project directory (parent of scripts directory)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 # Load environment variables using the shared loader (project root .env is authoritative)
@@ -25,7 +25,7 @@ if [ ! -f "$ENV_LOADER" ]; then
     exit 1
 fi
 # shellcheck disable=SC1090
-source "$ENV_LOADER"
+. "$ENV_LOADER"
 load_project_env "$PROJECT_DIR"
 
 BRANCH="${BRANCH:-}"
@@ -35,55 +35,46 @@ GIT_SYNC_REMOTES="${GIT_SYNC_REMOTES:-origin}"
 GIT_SYNC_PUSH_REMOTES="${GIT_SYNC_PUSH_REMOTES:-}"
 
 normalize_list() {
-    local raw="$1"
-    raw="${raw//,/ }"
-    local result=()
-    for item in $raw; do
-        [ -z "$item" ] && continue
-        local exists=false
-        for seen in "${result[@]}"; do
-            if [ "$seen" = "$item" ]; then
-                exists=true
-                break
-            fi
-        done
-        if [ "$exists" = false ]; then
-            result+=("$item")
-        fi
-    done
-    if [ "${#result[@]}" -gt 0 ]; then
-        printf '%s\n' "${result[@]}"
-    fi
+    raw="$1"
+    printf '%s\n' "$raw" | tr ',' ' ' | awk '{
+        for (i = 1; i <= NF; i++) {
+            if ($i != "" && !seen[$i]++) {
+                printf "%s%s", (out ? " " : ""), $i
+                out = 1
+            }
+        }
+    } END { if (out) printf "\n"; }'
 }
 
-mapfile -t remote_list < <(normalize_list "$GIT_SYNC_REMOTES")
-if [ "${#remote_list[@]}" -eq 0 ]; then
-    remote_list=("origin")
+remote_list="$(normalize_list "$GIT_SYNC_REMOTES")"
+if [ -z "$remote_list" ]; then
+    remote_list="origin"
 fi
-primary_remote="${remote_list[0]}"
+set -- $remote_list
+primary_remote="$1"
 
-mapfile -t push_targets < <(normalize_list "$GIT_SYNC_PUSH_REMOTES")
+push_targets="$(normalize_list "$GIT_SYNC_PUSH_REMOTES")"
 
 remote_env_key() {
     echo "$1" | tr '[:lower:]' '[:upper:]' | sed 's/[^A-Z0-9]/_/g'
 }
 
 remote_has_branch() {
-    local remote="$1"
-    local branch="$2"
+    remote="$1"
+    branch="$2"
     git ls-remote --heads "$remote" "$branch" | grep -q "$branch"
 }
 
 ensure_remote() {
-    local remote="$1"
+    remote="$1"
     if git remote get-url "$remote" >/dev/null 2>&1; then
         return
     fi
 
-    local env_suffix
     env_suffix="$(remote_env_key "$remote")"
-    local remote_url_var="GIT_REMOTE_URL_${env_suffix}"
-    local remote_url="${!remote_url_var:-}"
+    remote_url_var="GIT_REMOTE_URL_${env_suffix}"
+    remote_url=""
+    eval "remote_url=\${$remote_url_var:-}"
 
     if [ -z "$remote_url" ] && [ "$remote" = "$primary_remote" ]; then
         remote_url="$GIT_REMOTE_URL"
@@ -99,7 +90,7 @@ ensure_remote() {
 }
 
 ensure_branch_checked_out() {
-    local branch="$1"
+    branch="$1"
     if git rev-parse --verify --quiet "refs/heads/$branch" >/dev/null; then
         git checkout "$branch" >/dev/null 2>&1 || git checkout "$branch"
     else
@@ -109,9 +100,9 @@ ensure_branch_checked_out() {
 }
 
 sync_remote() {
-    local remote="$1"
-    local branch="$2"
-    local mode="${3:-normal}"
+    remote="$1"
+    branch="$2"
+    mode="${3:-normal}"
 
     if [ "$mode" = "force" ]; then
         info "Force syncing from $remote/$branch"
@@ -143,7 +134,7 @@ main() {
         exit 1
     fi
 
-    for remote in "${remote_list[@]}"; do
+    for remote in $remote_list; do
         ensure_remote "$remote"
     done
 
@@ -161,7 +152,7 @@ main() {
     ensure_branch_checked_out "$target_branch"
     info "Syncing branch $target_branch"
 
-    for remote in "${remote_list[@]}"; do
+    for remote in $remote_list; do
         if [ "$remote" = "$primary_remote" ] && [ "$FORCE_PULL" = "true" ]; then
             sync_remote "$remote" "$target_branch" "force"
         else
@@ -169,8 +160,8 @@ main() {
         fi
     done
 
-    if [ "${#push_targets[@]}" -gt 0 ]; then
-        for remote in "${push_targets[@]}"; do
+    if [ -n "$push_targets" ]; then
+        for remote in $push_targets; do
             ensure_remote "$remote"
             info "Pushing $target_branch to $remote"
             git push "$remote" "$target_branch"

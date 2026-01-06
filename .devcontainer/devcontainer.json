@@ -19,22 +19,23 @@
             "settings": {
                 "editor.acceptSuggestionOnTab": false,
                 "editor.tabCompletion": "off",
-                "editor.acceptSuggestionOnEnter": "off"
+                "editor.acceptSuggestionOnEnter": "off",
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "/bin/bash",
+                        "icon": "terminal-bash"
+                    }
+                }
             },
             "extensions": [
                 "ms-azuretools.vscode-docker",
                 "DavidAnson.vscode-markdownlint",
                 "esbenp.prettier-vscode",
                 "dbaeumer.vscode-eslint",
-                "ms-vscode-remote.remote-containers"
-            ],
-            "terminal.integrated.defaultProfile.linux": "bash",
-            "terminal.integrated.profiles.linux": {
-                "bash": {
-                    "path": "/bin/bash",
-                    "icon": "terminal-bash"
-                }
-            }
+                "ms-vscode-remote.remote-containers",
+                "anthropic.claude-code"
+            ]
         }
     },
     "remoteUser": "${localEnv:HOST_USERNAME}",

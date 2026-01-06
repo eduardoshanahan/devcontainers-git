@@ -67,13 +67,13 @@ This rule ensures all markdown files follow consistent formatting standards and 
 ## Emojis and Special Characters
 
 - **No emojis in markdown content** (MD041 rule)
-  - Avoid using emoji characters (🚀, ✅, ❌, etc.)
+  - Avoid using emoji characters (for example: rocket, check mark, cross)
   - Use text-based alternatives instead
   - Examples:
-    - Instead of ✅, use "✓" or "PASS"
-    - Instead of ❌, use "✗" or "FAIL"
-    - Instead of , use "DEPLOY" or "LAUNCH"
-    - Instead of , use "FIX" or "CONFIGURE"
+    - Instead of "check mark", use "✓" or "PASS"
+    - Instead of "cross", use "✗" or "FAIL"
+    - Instead of "rocket", use "DEPLOY" or "LAUNCH"
+    - Instead of "wrench", use "FIX" or "CONFIGURE"
 - Use standard ASCII characters when possible
 - Maintain professional documentation standards
 - Ensure compatibility across different platforms and tools

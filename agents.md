@@ -192,6 +192,10 @@ If a required environment variable is missing:
 - Minimal layers
 - Clear separation between build-time and runtime config
 
+### Markdown
+
+- No emoji characters in markdown content; use text alternatives instead
+
 ---
 
 ## 8. Tooling & Execution Assumptions

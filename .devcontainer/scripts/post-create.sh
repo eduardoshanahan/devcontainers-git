@@ -1,13 +1,13 @@
-#!/bin/bash
+#!/bin/sh
 
 # Load environment variables via shared loader (project root .env is authoritative)
 if [ -f "/workspace/.devcontainer/scripts/env-loader.sh" ]; then
     # shellcheck disable=SC1090
-    source "/workspace/.devcontainer/scripts/env-loader.sh"
+    . "/workspace/.devcontainer/scripts/env-loader.sh"
     load_project_env "/workspace"
 elif [ -f "$HOME/.devcontainer/scripts/env-loader.sh" ]; then
     # shellcheck disable=SC1090
-    source "$HOME/.devcontainer/scripts/env-loader.sh"
+    . "$HOME/.devcontainer/scripts/env-loader.sh"
     load_project_env "/workspace"
 else
     echo "Warning: env-loader.sh not found; skipping environment load"
@@ -67,17 +67,55 @@ export PATH="$HOME/.local/bin:$PATH"
 
 if [ "${SKIP_CLAUDE_INSTALL:-}" = "1" ] || [ "${SKIP_CLAUDE_INSTALL:-}" = "true" ]; then
     echo "Skipping Claude Code install (SKIP_CLAUDE_INSTALL is set)"
-elif ! command -v claude &> /dev/null; then
+elif ! command -v claude >/dev/null 2>&1; then
+    INSTALL_URL="https://claude.ai/install.sh"
+    INSTALL_TMP="$(mktemp)"
+    verify_sha256() {
+        expected="$1"
+        file="$2"
+        if command -v sha256sum >/dev/null 2>&1; then
+            echo "${expected}  ${file}" | sha256sum -c - >/dev/null 2>&1
+        elif command -v shasum >/dev/null 2>&1; then
+            echo "${expected}  ${file}" | shasum -a 256 -c - >/dev/null 2>&1
+        else
+            echo "Warning: sha256sum/shasum not found; skipping checksum verification."
+            return 0
+        fi
+    }
+
     if command -v timeout >/dev/null 2>&1; then
-        timeout 300s bash -c 'curl -fsSL https://claude.ai/install.sh | bash' || {
-            echo "Claude Code install timed out or failed; re-run post-create to try again."
+        timeout 300s curl -fsSL "$INSTALL_URL" -o "$INSTALL_TMP" || {
+            echo "Claude Code download timed out or failed; re-run post-create to try again."
+            rm -f "$INSTALL_TMP"
+            exit 1
         }
     else
-        curl -fsSL https://claude.ai/install.sh | bash || {
-            echo "Claude Code install failed; re-run post-create to try again."
+        curl -fsSL "$INSTALL_URL" -o "$INSTALL_TMP" || {
+            echo "Claude Code download failed; re-run post-create to try again."
+            rm -f "$INSTALL_TMP"
+            exit 1
         }
     fi
-    if command -v claude &> /dev/null; then
+
+    if [ -n "${CLAUDE_INSTALL_SHA256:-}" ]; then
+        if verify_sha256 "$CLAUDE_INSTALL_SHA256" "$INSTALL_TMP"; then
+            echo "Claude Code installer checksum verified."
+        else
+            echo "Claude Code installer checksum verification failed."
+            rm -f "$INSTALL_TMP"
+            exit 1
+        fi
+    else
+        echo "Warning: CLAUDE_INSTALL_SHA256 not set; skipping checksum verification."
+    fi
+
+    bash "$INSTALL_TMP" || {
+        echo "Claude Code install failed; re-run post-create to try again."
+        rm -f "$INSTALL_TMP"
+        exit 1
+    }
+    rm -f "$INSTALL_TMP"
+    if command -v claude >/dev/null 2>&1; then
         echo "Claude Code installed successfully!"
     fi
 else
@@ -86,7 +124,7 @@ fi
 
 # Ensure login shells also inherit the alias setup by sourcing .bashrc
 ensure_profile_sources_bashrc() {
-    local profile_file="$1"
+    profile_file="$1"
     [ -f "$profile_file" ] || touch "$profile_file"
     if ! grep -q "source ~/.bashrc" "$profile_file"; then
         cat <<'EOF' >> "$profile_file"

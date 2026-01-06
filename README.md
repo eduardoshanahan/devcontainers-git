@@ -4,6 +4,39 @@
 [![Docker](https://img.shields.io/badge/Docker-Required-blue)](https://www.docker.com/)
 [![VS Code](https://img.shields.io/badge/VS%20Code-Required-blue)](https://code.visualstudio.com/)
 
+This repository is a devcontainer template for Git-focused work with strict
+UID/GID matching, SSH agent forwarding, and optional sync helpers.
+
+## Quick Start
+
+1. Copy `.env.example` to `.env`.
+2. Fill in `.env` with your host user, UID/GID, Git identity, editor choice,
+   container resource limits, and image naming values.
+3. Run `./launch.sh`.
+4. In your editor, choose "Reopen in Container".
+5. Ensure `SSH_AUTH_SOCK` is available on the host before reopening.
+6. Use `./scripts/sync_git.sh` when you need a safe pull or push.
+
+## Key Docs
+
+- Environment variables: [working with environment variables](documentation/working%20with%20environment%20variables.md)
+- Usage: [how to use this project.md](documentation/how%20to%20use%20this%20project.md)
+- Testing: [how to test.md](documentation/how%20to%20test.md)
+- Troubleshooting: [troubleshooting.md](documentation/troubleshooting.md)
+- Git sync helper: [how to use sync_git.md](documentation/how%20to%20use%20sync_git.md)
+- File sync and ownership: [file sync and ownership.md](documentation/file%20sync%20and%20ownership.md)
+- Devcontainer CLI: [how to use devcontainer cli.md](documentation/how%20to%20use%20devcontainer%20cli.md)
+- Claude Code: [how to use claude.md](documentation/how%20to%20use%20claude.md)
+- Devcontainer scripts: [.devcontainer/scripts/README.md](.devcontainer/scripts/README.md)
+
+## Helpful Scripts
+
+- Devcontainer launcher: `./launch.sh`
+- CLI shell into container: `./devcontainer-launch.sh`
+- Claude Code launcher: `./claude-launch.sh`
+- Git sync helper: `./scripts/sync_git.sh`
+- SSH and Git verifier (in container): `./.devcontainer/scripts/verify-git-ssh.sh`
+
 ## Why do I have this project?
 
 In the last few years I have been using Visual Studio Code, and I like to use as much containers as I can, instead of setting up environments for Python or things like that.
@@ -25,85 +58,3 @@ However, there are some tricky cases around file ownership (I use Ubuntu 24.10 a
 A way around it is to use the same user inside the container as it is outside. A launch script takes care of that details passing activity, and all the files seems to be updated correctly now.
 
 I want to be able to use Git inside and out of the container, then I also pass the ssh credentials to my Git remote repository to syncronise at will. That also seems to be working correctly.
-
-## Overview
-This project serves as a comprehensive template for setting up **Development Containers (Devcontainers)**. It is designed to provide a consistent, reproducible, and containerized development environment, primarily for use with Visual Studio Code, Cursor, or Antigravity.
-
-## Core Problem Solved
-The project addresses the challenge of maintaining consistent development environments across multiple machines. It specifically targets issues related to:
-- **File Synchronization**: mitigating conflicts when using services like Synology Drive for syncing code between machines.
-- **File Ownership**: handling UID/GID mapping to prevent permission issues between the host/container and the synchronization service.
-- **Reproducibility**: eliminating "it works on my machine" problems by defining the environment in code.
-
-## Key Features
-
-### 1. Containerized Environment
-- Provides a pre-configured `Dockerfile` based on Ubuntu.
-- Includes essential development tools:
-    - **Git** (with SSH support)
-    - **Docker CLI** (for Docker-in-Docker capabilities)
-    - **Starship** (for a modern shell prompt)
-    - **JSON tools** (`jq`, linters)
-
-### 2. Intelligent Launch System
-- Includes a `launch.sh` script that:
-    - Validates environment variables (`.env`).
-    - Checks for required tools.
-    - Launches the user's preferred editor (VS Code, Cursor, or Antigravity).
-    - Ensures the local environment is correctly prepped before starting the container.
-
-### 3. Git & SSH Integration
-- Seamlessly forwards SSH agents to the container, allowing secure GitHub interactions without storing keys inside the image. When `SSH_AUTH_SOCK` is forwarded from the host we reuse it; only if it is missing do we start a fresh agent and manage keys locally.
-- Automates Git configuration (user name, email) based on environment variables.
-
-### 4. Custom Synchronization
-- Features a `sync_git.sh` script to safely manage Git operations in environments where an external file syncer (like Synology Drive) is also active, preventing data corruption or conflicts.
-
-## Quick Start
-
-1. **Copy the env template:** `cp .env.example .env`
-2. **Fill in required values:** edit `.env` so `PROJECT_NAME`, `HOST_USERNAME`, UID/GID, git identity, editor choice, container resource limits, and Docker image values match your machine (see the comments inside the file). Git remotes are optional unless you use `sync_git.sh`. `CONTAINER_HOSTNAME` and `DOCKER_IMAGE_NAME` already derive from `PROJECT_NAME` + `EDITOR_CHOICE`, so you only tweak them if you need a custom naming scheme.
-3. **Launch your editor via the helper:** run `./launch.sh`. It loads `.env`, validates it, and then opens VS Code/Cursor/Antigravity pointing at this folder.
-4. **Reopen in container:** inside the editor, use the Dev Containers extension’s “Reopen in Container” command; it reuses the values validated in step 3.
-5. **Ensure SSH agent forwarding is available:** the container bind-mounts `SSH_AUTH_SOCK`, so the devcontainer will fail to start if your host has no SSH agent running. Start an agent (and add keys) on the host before reopening in container.
-6. **Work normally:** run `./scripts/sync_git.sh` whenever you need to pull/push (configure `GIT_SYNC_REMOTES`/`GIT_SYNC_PUSH_REMOTES` if you use multiple remotes). SSH agent forwarding just works as long as your host exposes `SSH_AUTH_SOCK`.
-
-## Launch Scripts
-
-- `./launch.sh`: loads `.env`, validates it, then opens VS Code, Cursor, or Antigravity on the host.
-- `./devcontainer-launch.sh`: uses the devcontainer CLI to open an interactive shell inside the container. Requires `devcontainer` CLI (`npm install -g @devcontainers/cli`).
-- `./claude-launch.sh`: starts Claude Code inside the container via the devcontainer CLI. Requires `devcontainer` CLI on the host and Claude installed in the container (post-create script installs it by default unless skipped).
-
-## Usage
-Users clone this repository, configure a `.env` file with their specific user details (UID/GID, Git credentials), and use the provided scripts to launch their editor. The editor then reopens the project inside the defined Docker container, providing a fully featured development workspace.
-
-### Keeping the repository in sync
-
-Run `./scripts/sync_git.sh` whenever you want to fast-forward the local checkout or publish your current branch. Configure the remotes the script should touch via `.env`:
-
-```env
-# Pull from both GitHub and LAN mirrors (GitHub is the primary remote here)
-GIT_SYNC_REMOTES="origin lan"
-
-# Optionally push the current branch to both mirrors after syncing
-GIT_SYNC_PUSH_REMOTES="origin lan"
-
-# Provide a URL if the script needs to auto-add the LAN remote
-GIT_REMOTE_URL_LAN="ssh://git@192.168.1.10:/volume1/git/${PROJECT_NAME}.git"
-```
-
-Once configured, you can run:
-
-```bash
-# standard update (requires a clean working tree)
-./scripts/sync_git.sh
-
-# overwrite local changes with the remote version
-FORCE_PULL=true ./scripts/sync_git.sh
-```
-
-- The script only touches the current repository (no global git config, no backups).  
-- It ensures every remote listed in `GIT_SYNC_REMOTES` exists (using `GIT_REMOTE_URL` or `GIT_REMOTE_URL_<REMOTE>` values if it needs to add one).  
-- The first remote in `GIT_SYNC_REMOTES` is treated as the primary upstream for pulls/resets; additional remotes are rebased in sequence so they stay in sync.  
-- Set `GIT_SYNC_PUSH_REMOTES` to automatically push the branch after syncing (leave empty to skip pushes).  
-- If you have uncommitted changes it exits with an error unless you re-run it with `FORCE_PULL=true`.

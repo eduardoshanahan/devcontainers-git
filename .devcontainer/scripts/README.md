@@ -28,7 +28,7 @@ Defines color variables for terminal output:
 Main initialization script that:
 
 - Sources color definitions and environment variables
-- Validates environment configuration
+- Assumes validation already happened in `launch.sh`
 - Configures Git user information
 - Makes scripts executable
 - Sets up bashrc to source required scripts
@@ -38,7 +38,7 @@ Main initialization script that:
 
 Runs after container creation to:
 
-- Source and validate environment variables
+- Source environment variables (validation happens in `launch.sh`)
 - Configure Git user information
 - Make scripts executable
 - Set up bashrc with required script sources
@@ -87,7 +87,7 @@ chmod +x /workspace/.devcontainer/scripts/init-devcontainer.sh
 The scripts have the following dependencies:
 
 - `colors.sh` is sourced by other scripts for colored output
-- `validate-env.sh` is called by `launch.sh` and `post-create.sh`
+- `validate-env.sh` is called by `launch.sh`; devcontainer scripts assume `.env` is already valid
 - `bash-prompt.sh` and `ssh-agent-setup.sh` are sourced in bashrc
 
 ## Customization
