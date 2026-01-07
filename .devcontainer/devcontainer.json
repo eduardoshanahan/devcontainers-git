@@ -15,7 +15,6 @@
             "version": "lts"
         }
     },
-    "image": "${localEnv:DOCKER_IMAGE_NAME}:${localEnv:DOCKER_IMAGE_TAG}",
     "customizations": {
         "vscode": {
             "settings": {

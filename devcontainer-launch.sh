@@ -85,6 +85,10 @@ if [ -z "${DOCKER_IMAGE_NAME:-}" ] || [ "$DOCKER_IMAGE_NAME" = "$DEFAULT_CONTAIN
 fi
 
 info "Ensuring devcontainer is running..."
+if [ -n "${DOCKER_IMAGE_NAME:-}" ] && [ -n "${DOCKER_IMAGE_TAG:-}" ]; then
+  info "Building devcontainer image ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}..."
+  devcontainer build --workspace-folder "$PROJECT_DIR" --image-name "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" >/dev/null
+fi
 if ! devcontainer exec --workspace-folder "$PROJECT_DIR" true >/dev/null 2>&1; then
   if docker ps -a --format '{{.Names}}' | grep -qx "${DOCKER_IMAGE_NAME}"; then
     info "Removing stale container: ${DOCKER_IMAGE_NAME}"
@@ -99,7 +103,12 @@ stop_container() {
   if [ "${KEEP_CONTAINER:-}" = "1" ] || [ "${KEEP_CONTAINER:-}" = "true" ]; then
     return 0
   fi
-  devcontainer down --workspace-folder "$PROJECT_DIR" >/dev/null 2>&1 || true
+  if devcontainer down --workspace-folder "$PROJECT_DIR" >/dev/null 2>&1; then
+    return 0
+  fi
+  if command -v docker >/dev/null 2>&1; then
+    docker stop "${DOCKER_IMAGE_NAME}" >/dev/null 2>&1 || true
+  fi
 }
 trap 'stop_container' EXIT
 info "Opening a shell in the container..."
