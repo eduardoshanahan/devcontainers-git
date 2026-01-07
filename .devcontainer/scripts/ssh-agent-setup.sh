@@ -1,7 +1,15 @@
 #!/bin/sh
 # --- SSH Agent Setup ---
 
-# Exit on error and undefined vars
+# Avoid running multiple times in the same shell.
+if [ "${SSH_AGENT_SETUP_DONE:-0}" = "1" ]; then
+  return 0
+fi
+export SSH_AGENT_SETUP_DONE=1
+
+# Exit on error and undefined vars.
+# Preserve shell options because this script is sourced from interactive shells.
+_SSH_AGENT_OLD_OPTS=$(set +o)
 set -eu
 IFS='
 	'
@@ -96,4 +104,6 @@ case $- in
 esac
 
 set +e
+# Restore caller shell options (notably disables nounset for the caller).
+eval "$_SSH_AGENT_OLD_OPTS"
 # --- End SSH Agent Setup ---
