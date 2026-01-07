@@ -15,8 +15,8 @@ success() { printf '%b\n' "${GREEN} $1${NC}"; }
 error() { printf '%b\n' "${RED} $1${NC}" >&2; }
 
 # Get the actual project directory (parent of scripts directory)
-SCRIPT_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+PROJECT_DIR=$(dirname "$SCRIPT_DIR")
 
 # Load environment variables using the shared loader (project root .env is authoritative)
 ENV_LOADER="$PROJECT_DIR/.devcontainer/scripts/env-loader.sh"
@@ -29,13 +29,16 @@ fi
 load_project_env "$PROJECT_DIR"
 
 BRANCH="${BRANCH:-}"
-FORCE_PULL="${FORCE_PULL:-}"
+FORCE_PULL="${FORCE_PULL:-false}"
 GIT_REMOTE_URL="${GIT_REMOTE_URL:-}"
 GIT_SYNC_REMOTES="${GIT_SYNC_REMOTES:-}"
 GIT_SYNC_PUSH_REMOTES="${GIT_SYNC_PUSH_REMOTES:-}"
 
 normalize_list() {
     raw="$1"
+    if [ -z "$raw" ]; then
+        return 0
+    fi
     printf '%s\n' "$raw" | tr ',' ' ' | awk '{
         for (i = 1; i <= NF; i++) {
             if ($i != "" && !seen[$i]++) {
@@ -126,6 +129,19 @@ sync_remote() {
     fi
 }
 
+ensure_upstream_tracking() {
+    remote="$1"
+    branch="$2"
+    if git rev-parse --abbrev-ref --symbolic-full-name "@{u}" >/dev/null 2>&1; then
+        return
+    fi
+    if remote_has_branch "$remote" "$branch"; then
+        info "Setting upstream of $branch to $remote/$branch"
+        git branch --set-upstream-to="$remote/$branch" "$branch" >/dev/null 2>&1 || \
+            git branch -u "$remote/$branch" "$branch"
+    fi
+}
+
 main() {
     cd "$PROJECT_DIR" || { error "Project directory not found!"; exit 1; }
     info "Working in directory: $PROJECT_DIR"
@@ -161,11 +177,17 @@ main() {
         fi
     done
 
+    ensure_upstream_tracking "$primary_remote" "$target_branch"
+
     if [ -n "$push_targets" ]; then
         for remote in $push_targets; do
             ensure_remote "$remote"
             info "Pushing $target_branch to $remote"
-            git push "$remote" "$target_branch"
+            if remote_has_branch "$remote" "$target_branch"; then
+                git push "$remote" "$target_branch"
+            else
+                git push -u "$remote" "$target_branch"
+            fi
         done
     fi
 
