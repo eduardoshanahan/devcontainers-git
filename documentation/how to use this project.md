@@ -6,7 +6,7 @@ This repository is a devcontainer template. It expects a project-specific
 ## Quick Start
 
 1. Copy `.env.example` to `.env`.
-2. Update `.env` with your host user, UID/GID, Git identity, and editor choice.
+2. Update `.env` with your host user, UID/GID, locale, Git identity, and editor choice.
 3. Run `./editor-launch.sh`.
 4. In your editor, choose "Reopen in Container".
 

@@ -6,6 +6,7 @@ PROJECT_NAME|Project name|^[a-z0-9][a-z0-9-]*$
 HOST_USERNAME|System username|^[a-z_][a-z0-9_-]*$
 HOST_UID|User ID|^[0-9]+$
 HOST_GID|Group ID|^[0-9]+$
+LOCALE|Locale|^[A-Za-z]{2}_[A-Za-z]{2}\.UTF-8$
 CONTAINER_HOSTNAME|Container hostname|^[a-zA-Z][a-zA-Z0-9-]*$
 CONTAINER_MEMORY|Container memory limit|^[0-9]+[gGmM]$
 CONTAINER_CPUS|Container CPU limit|^[0-9]+(\.[0-9]+)?$

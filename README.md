@@ -10,7 +10,7 @@ UID/GID matching, SSH agent forwarding, and optional sync helpers.
 ## Quick Start
 
 1. Copy `.env.example` to `.env`.
-2. Fill in `.env` with your host user, UID/GID, Git identity, editor choice,
+2. Fill in `.env` with your host user, UID/GID, locale, Git identity, editor choice,
    container resource limits, and image naming values.
 3. Run `./editor-launch.sh`.
 4. In your editor, choose "Reopen in Container".

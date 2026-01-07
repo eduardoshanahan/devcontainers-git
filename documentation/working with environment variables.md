@@ -1,7 +1,7 @@
 # Working with environment variables (TL;DR)
 
 1. **Copy the template:** `cp .env.example .env` (only needs to happen once per project).
-2. **Fill in the values:** edit `.env` so that `PROJECT_NAME`, `HOST_USERNAME`, `HOST_UID`, `HOST_GID`, Git info, `EDITOR_CHOICE`, `CONTAINER_HOSTNAME=${PROJECT_NAME}-${EDITOR_CHOICE}`, `DOCKER_IMAGE_NAME=${PROJECT_NAME}-${EDITOR_CHOICE}`, etc. match your machine. This file is the single source of truth.
+2. **Fill in the values:** edit `.env` so that `PROJECT_NAME`, `HOST_USERNAME`, `HOST_UID`, `HOST_GID`, `LOCALE`, Git info, `EDITOR_CHOICE`, `CONTAINER_HOSTNAME=${PROJECT_NAME}-${EDITOR_CHOICE}`, `DOCKER_IMAGE_NAME=${PROJECT_NAME}-${EDITOR_CHOICE}`, etc. match your machine. This file is the single source of truth.
 3. **No implicit defaults:** keep all required values in `.env`.
 4. **Validate & launch:** always start your session with `./editor-launch.sh`. It loads `.env`, runs `.devcontainer/scripts/validate-env.sh`, and only opens VS Code/Cursor/Antigravity after the check passes. If something is wrong, the script exits with the list of fixes so you don’t waste time booting the devcontainer.
 5. **Inside the container:** every helper script sources `.devcontainer/scripts/env-loader.sh`, so anything defined in `.env` automatically shows up in init/post-create hooks and in your shell.
