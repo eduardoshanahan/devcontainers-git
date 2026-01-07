@@ -1,5 +1,5 @@
 {
-    "name": "Ubuntu Devcontainers-Git",
+    "name": "${localEnv:PROJECT_NAME}",
     "build": {
         "dockerfile": "Dockerfile",
         "context": ".",
@@ -15,6 +15,7 @@
             "version": "lts"
         }
     },
+    "image": "${localEnv:DOCKER_IMAGE_NAME}:${localEnv:DOCKER_IMAGE_TAG}",
     "customizations": {
         "vscode": {
             "settings": {
@@ -41,8 +42,8 @@
     },
     "remoteUser": "${localEnv:HOST_USERNAME}",
     "updateRemoteUserUID": true,
-    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-    "workspaceFolder": "/workspace",
+    "workspaceMount": "source=${localWorkspaceFolder},target=${localEnv:WORKSPACE_FOLDER},type=bind,consistency=cached",
+    "workspaceFolder": "${localEnv:WORKSPACE_FOLDER}",
     "mounts": [
         "source=${localWorkspaceFolder}/.devcontainer,target=/home/${localEnv:HOST_USERNAME}/.devcontainer,type=bind,consistency=cached",
         "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:HOST_USERNAME}/.ssh,type=bind,consistency=cached",
@@ -71,8 +72,7 @@
         "--env=SSH_AUTH_SOCK=/ssh-agent",
         "--memory=${localEnv:CONTAINER_MEMORY}",
         "--cpus=${localEnv:CONTAINER_CPUS}",
-        "--shm-size=${localEnv:CONTAINER_SHM_SIZE}",
-        "--env-file=${localWorkspaceFolder}/.env"
+        "--shm-size=${localEnv:CONTAINER_SHM_SIZE}"
     ],
     "forwardPorts": [],
     "remoteEnv": {

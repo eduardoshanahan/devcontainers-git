@@ -25,7 +25,7 @@ info() {
 }
 
 # Load project environment via shared loader (root .env is authoritative)
-PROJECT_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 ENV_LOADER="$PROJECT_DIR/.devcontainer/scripts/env-loader.sh"
 
 if [ ! -f "$ENV_LOADER" ]; then

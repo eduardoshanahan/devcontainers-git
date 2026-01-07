@@ -25,7 +25,7 @@ info() {
 }
 
 # Load project environment
-PROJECT_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 ENV_LOADER="$PROJECT_DIR/.devcontainer/scripts/env-loader.sh"
 
 if [ ! -f "$ENV_LOADER" ]; then

@@ -25,7 +25,7 @@ info() {
 }
 
 # Load project environment
-PROJECT_DIR="$(CDPATH= cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 ENV_LOADER="$PROJECT_DIR/.devcontainer/scripts/env-loader.sh"
 
 if [ ! -f "$ENV_LOADER" ]; then
@@ -76,9 +76,9 @@ export DOCKER_IMAGE_TAG
 
 # Use a unique container name for CLI sessions to avoid conflicts
 LAUNCHER_TAG="cli"
-BASE_CONTAINER_NAME="devcontainer-git-${LAUNCHER_TAG}"
-DEFAULT_CONTAINER_NAME="devcontainer-git-${EDITOR_CHOICE:-code}"
-if [ -z "${DOCKER_IMAGE_NAME:-}" ] || [ "$DOCKER_IMAGE_NAME" = "$DEFAULT_CONTAINER_NAME" ] || [ "$DOCKER_IMAGE_NAME" = "devcontainer-git-code" ]; then
+BASE_CONTAINER_NAME="${PROJECT_NAME}-${LAUNCHER_TAG}"
+DEFAULT_CONTAINER_NAME="${PROJECT_NAME}-${EDITOR_CHOICE:-code}"
+if [ -z "${DOCKER_IMAGE_NAME:-}" ] || [ "$DOCKER_IMAGE_NAME" = "$DEFAULT_CONTAINER_NAME" ] || [ "$DOCKER_IMAGE_NAME" = "${PROJECT_NAME}-code" ]; then
   UNIQUE_SUFFIX="$(date +%s)-$$"
   export DOCKER_IMAGE_NAME="${BASE_CONTAINER_NAME}-${UNIQUE_SUFFIX}"
   export CONTAINER_HOSTNAME="${DOCKER_IMAGE_NAME}"

@@ -3,7 +3,7 @@
 
 # Avoid running multiple times in the same shell.
 if [ "${SSH_AGENT_SETUP_DONE:-0}" = "1" ]; then
-  return 0
+  return 0 2>/dev/null || exit 0
 fi
 export SSH_AGENT_SETUP_DONE=1
 

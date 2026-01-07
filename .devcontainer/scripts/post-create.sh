@@ -13,6 +13,12 @@ else
     echo "Warning: env-loader.sh not found; skipping environment load"
 fi
 
+# Fail fast if SSH agent forwarding is unavailable.
+if [ -z "${SSH_AUTH_SOCK:-}" ] || [ ! -S "${SSH_AUTH_SOCK}" ]; then
+    echo "Error: SSH_AUTH_SOCK is not set to a valid socket. Ensure host agent forwarding is enabled." >&2
+    exit 1
+fi
+
 # Configure Git if variables are set
 if [ -n "$GIT_USER_NAME" ] && [ -n "$GIT_USER_EMAIL" ]; then
     REPO_DIR="/workspace"
@@ -53,6 +59,27 @@ fi
 if ! grep -q "source.*ssh-agent-setup.sh" ~/.bashrc; then
     echo 'source /workspace/.devcontainer/scripts/ssh-agent-setup.sh' >> ~/.bashrc
 fi
+
+# Ensure VS Code shell integration variable is set early to avoid nounset errors.
+ensure_bashrc_guard() {
+    guard_start="# >>> devcontainer guard >>>"
+    guard_end="# <<< devcontainer guard <<<"
+    if ! grep -q "$guard_start" ~/.bashrc; then
+        tmp_file="$(mktemp)"
+        {
+            cat <<'EOF'
+# >>> devcontainer guard >>>
+# Avoid nounset errors from VS Code shell integration.
+export VSCODE_SHELL_LOGIN="${VSCODE_SHELL_LOGIN:-}"
+# <<< devcontainer guard <<<
+EOF
+            cat ~/.bashrc
+        } > "$tmp_file"
+        mv "$tmp_file" ~/.bashrc
+    fi
+}
+
+ensure_bashrc_guard
 
 # Add Claude Code to PATH if not already present
 if ! grep -q '.local/bin' ~/.bashrc; then
