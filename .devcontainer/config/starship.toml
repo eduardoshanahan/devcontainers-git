@@ -3,8 +3,7 @@
 
 # Use custom format
 format = """
-[╭─](bold blue) devcontainers-git $directory -> $git_branch$git_status
-[╰─](bold blue)$character"""
+[╭─](bold blue)$env_var$directory$git_branch$git_status$line_break[╰─](bold blue)$character"""
 
 # Disable the package module, hiding it from the prompt
 [package]
@@ -34,17 +33,26 @@ disabled = false
 style = "bold cyan"
 read_only = " "
 truncation_length = 3
+format = " [$path]($style)"
+
+# Show the project name when provided in .env
+[env_var.PROJECT_NAME]
+format = " [$env_value]($style)"
+style = "bold cyan"
+
+[line_break]
+disabled = false
 
 # Git branch format
 [git_branch]
 symbol = ""
 style = "bold purple"
-format = "[$branch]($style)"
+format = "[ -> $branch]($style)"
 
 # Git status format
 [git_status]
 style = "bold red"
-format = '([\[$all_status$ahead_behind\]]($style))'
+format = '([\[$all_status$ahead_behind\] ]($style) )'
 disabled = false
 
 # Node.js format
