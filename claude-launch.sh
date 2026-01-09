@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Set strict options
+# Set strict shell options
 set -eu
 
 # Colors for output
@@ -113,6 +113,7 @@ stop_container() {
   fi
 }
 trap 'stop_container' EXIT
+
 info "Launching Claude Code..."
 echo ""
 

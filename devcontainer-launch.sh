@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Set strict options
+# Set strict shell options
 set -eu
 
 # Colors for output
@@ -113,6 +113,7 @@ stop_container() {
   fi
 }
 trap 'stop_container' EXIT
+
 info "Opening a shell in the container..."
 echo ""
 devcontainer exec --workspace-folder "$PROJECT_DIR" --id-label "$ID_LABEL" bash -l

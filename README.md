@@ -19,6 +19,7 @@ UID/GID matching, SSH agent forwarding, and optional sync helpers.
 
 ## Key Docs
 
+- Documentation index: [documentation/README.md](documentation/README.md)
 - Environment variables: [working with environment variables](documentation/working%20with%20environment%20variables.md)
 - Usage: [how to use this project.md](documentation/how%20to%20use%20this%20project.md)
 - Testing: [how to test.md](documentation/how%20to%20test.md)
