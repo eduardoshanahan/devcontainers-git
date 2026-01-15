@@ -7,7 +7,9 @@
             "USERNAME": "${localEnv:HOST_USERNAME}",
             "USER_UID": "${localEnv:HOST_UID}",
             "USER_GID": "${localEnv:HOST_GID}",
-            "LOCALE": "${localEnv:LOCALE}"
+            "LOCALE": "${localEnv:LOCALE}",
+            "INSTALL_CLAUDE": "${localEnv:INSTALL_CLAUDE}",
+            "CLAUDE_INSTALL_SHA256": "${localEnv:CLAUDE_INSTALL_SHA256}"
         }
     },
     "features": {
@@ -55,10 +57,15 @@
         "USER_UID": "${localEnv:HOST_UID}",
         "USER_GID": "${localEnv:HOST_GID}",
         "LOCALE": "${localEnv:LOCALE}",
+        "WORKSPACE_FOLDER": "${localEnv:WORKSPACE_FOLDER}",
         "CONTAINER_MEMORY": "${localEnv:CONTAINER_MEMORY}",
         "CONTAINER_CPUS": "${localEnv:CONTAINER_CPUS}",
         "CONTAINER_SHM_SIZE": "${localEnv:CONTAINER_SHM_SIZE}",
         "CONTAINER_HOSTNAME": "${localEnv:CONTAINER_HOSTNAME}",
+        "CONTAINER_HOSTNAME_EDITOR": "${localEnv:CONTAINER_HOSTNAME_EDITOR}",
+        "CONTAINER_HOSTNAME_DEVCONTAINER": "${localEnv:CONTAINER_HOSTNAME_DEVCONTAINER}",
+        "CONTAINER_HOSTNAME_CLAUDE": "${localEnv:CONTAINER_HOSTNAME_CLAUDE}",
+        "DEVCONTAINER_CONTEXT": "${localEnv:DEVCONTAINER_CONTEXT}",
         "GIT_USER_NAME": "${localEnv:GIT_USER_NAME}",
         "GIT_USER_EMAIL": "${localEnv:GIT_USER_EMAIL}",
         "GIT_REMOTE_URL": "${localEnv:GIT_REMOTE_URL}",
@@ -68,6 +75,7 @@
     "runArgs": [
         "--name=${localEnv:DOCKER_IMAGE_NAME}",
         "--hostname=${localEnv:CONTAINER_HOSTNAME}",
+        "--env-file=${localWorkspaceFolder}/.env",
         "--env=SSH_AUTH_SOCK=/ssh-agent",
         "--memory=${localEnv:CONTAINER_MEMORY}",
         "--cpus=${localEnv:CONTAINER_CPUS}",
@@ -75,6 +83,7 @@
     ],
     "forwardPorts": [],
     "remoteEnv": {
-        "SSH_AUTH_SOCK": "/ssh-agent"
+        "SSH_AUTH_SOCK": "/ssh-agent",
+        "PATH": "/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin"
     }
 }

@@ -76,10 +76,10 @@ If you need to run any script manually:
 
 ```bash
 # Make the script executable
-chmod +x /workspace/.devcontainer/scripts/init-devcontainer.sh
+chmod +x "${WORKSPACE_FOLDER}/.devcontainer/scripts/init-devcontainer.sh"
 
 # Run the script
-/workspace/.devcontainer/scripts/init-devcontainer.sh
+"${WORKSPACE_FOLDER}/.devcontainer/scripts/init-devcontainer.sh"
 ```
 
 ### Dependencies
@@ -152,12 +152,12 @@ chmod +x .devcontainer/scripts/verify-git-ssh.sh
 
 - Debugging env-loader interactions:
   - To see which env variables the loader set, enable debug when invoking load_project_env:
-    - export ENV_LOADER_DEBUG=1 before init (or pass `1` as second arg to the loader when sourcing manually).
+    - export ENV_LOADER_DEBUG=true before init (or pass `true` as second arg to the loader when sourcing manually).
   - Example (inside container):
 
     ```bash
-    source /workspace/.devcontainer/scripts/env-loader.sh
-    load_project_env /workspace 1
+    source "${WORKSPACE_FOLDER}/.devcontainer/scripts/env-loader.sh"
+    load_project_env "${WORKSPACE_FOLDER}" true
     ```
 
 This verifier is intended to quickly validate that SSH agent forwarding and Git configuration are working as expected in the devcontainer.

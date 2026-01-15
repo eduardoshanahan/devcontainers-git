@@ -15,6 +15,9 @@ Set how many days of unused images to keep in `.env`:
 DEVCONTAINER_IMAGE_RETENTION_DAYS=7
 ```
 
+The cleanup script requires this value and will fail if it is missing or
+invalid.
+
 ## Run the cleanup
 
 From the project root:

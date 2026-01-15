@@ -31,6 +31,11 @@ fi
 . "$ENV_LOADER"
 load_project_env "$PROJECT_DIR"
 
+if ! sh "$PROJECT_DIR/scripts/validate-env.sh" >/dev/null; then
+  error "Environment validation failed. Please fix your .env values."
+  exit 1
+fi
+
 if ! command -v docker >/dev/null 2>&1; then
   error "Docker is not installed!"
   exit 1
@@ -40,7 +45,11 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
-RETENTION_DAYS="${DEVCONTAINER_IMAGE_RETENTION_DAYS:-7}"
+RETENTION_DAYS="${DEVCONTAINER_IMAGE_RETENTION_DAYS:-}"
+if [ -z "$RETENTION_DAYS" ]; then
+  error "DEVCONTAINER_IMAGE_RETENTION_DAYS must be set in .env."
+  exit 1
+fi
 case "$RETENTION_DAYS" in
   ''|*[!0-9]*)
     error "DEVCONTAINER_IMAGE_RETENTION_DAYS must be a positive integer (days)."
